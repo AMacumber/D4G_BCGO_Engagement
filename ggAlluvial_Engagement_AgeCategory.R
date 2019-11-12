@@ -1,5 +1,5 @@
 ### Engagement Status
-## Author: Andrew Macumber
+## Authors: Andrew Macumber, Alex Campbell
 ###
 
 
@@ -67,7 +67,7 @@ check_in_attendance_df <- attendance_df %>%
     check_in_week = week(as.Date(date_attended)),
     check_in_period = ifelse(check_in_month == 7 | check_in_month == 8, "Summer", "School")
   ) %>%
-    
+  
   # remove pre-school year 2009 | summer 2019
   filter(check_in_date >= "2009-09-01") %>%
   filter(check_in_date < "2019-07-01") %>%
@@ -95,10 +95,10 @@ member_dim_cohort <- check_in_attendance_df %>%
 
 ## Function to categorize engagement level based on average visits per week
 engagementFunction <- function(x) {
-  if(x >= 2.00) {"D. Ideal (2+)"
-  } else if(x >= 1.00) {"C. Typical (1-2)"
-  } else if(x >= 0) {"B. Poor (0-1)"
-  } else {"A. None (0)"}
+  if(x >= 2.00) {"A. Ideal (2+)"
+  } else if(x >= 1.00) {"B. Typical (1-2)"
+  } else if(x >= 0) {"C. Poor (0-1)"
+  } else {"D. None (0)"}
 }
 ##
 
@@ -119,10 +119,19 @@ check_in_Cohort_stats <- check_in_attendance_df %>%
   mutate(
     check_in_wk_avg_Cohort = round(check_in_count_Cohort / no_weeks, 3),
     Eng = engagementFunction(check_in_wk_avg_Cohort)
-    ) %>%
+  ) %>%
   
   # Add member attributes
   left_join(member_dim_cohort, by = c("d4g_member_id" = "d4g_member_id", "Cohort" = "Cohort"))
+##
+
+
+### Alluvial Diagram (function ggalluvial)
+
+## Set up work space
+library(ggalluvial)
+set.seed(2564)
+windows(10,7)
 ##
 
 ## Table: Member Engagement Status (Ideal, Typical, Poor, None) by Age_Group (Junior, Intermediate, Senior)
@@ -140,58 +149,32 @@ eng_age_group <- check_in_Cohort_stats %>%
   ) %>%
   
   # Subset the dataframe with columns of interest
-  select(d4g_member_id, age_category, Eng_Level) %>%
-  
-  # Create new dims; "variable" = Eng_Level; "value" = Eng_Level values
-  pivot_longer(c(-d4g_member_id, -age_category), names_to = "variable", values_to = "value") %>%
-  
-  # New dim: combination of "variable" and "age_category" (ex., Eng_Level.S)
-  unite(variableT, variable, age_category, sep=".") %>%
-  
-  # breaks "variableT" into new columns
-  spread(variableT, value)
-##
-###
-
-
-### Alluvial diagram (function alluvial)
-
-## Data prep for Alluvial diagram
-datAlluvial <-
-  
-  # start a pipeline
-  eng_age_group %>%
-  
-  # Establish grouping order
-  group_by(Eng_Level.J, Eng_Level.I, Eng_Level.S) %>%
-  
-  # create dim: "n" count of each of unique combos of Eng_Level at time Junior, Intermediate, Senior
-  summarise(n = n()) #%>%
+  select(d4g_member_id, age_category, Eng_Level) #%>%
 ##
 
-## Load library and create display window
-library(alluvial)
-windows(10,7)
+## Plotting program requires Eng_Level to be factor type
+eng_age_group$Eng_Level <- as.factor(eng_age_group$Eng_Level)
 ##
 
-## Change 'na' to "A. None"
-datAlluvial[is.na(datAlluvial)] <- "A. None (0)"
+## Change J, I, S to Junior, Intermediate and Senior
+eng_age_group <- within(eng_age_group, age_category[age_category=="J"] <- "A-Junior")
+eng_age_group <- within(eng_age_group, age_category[age_category=="I"] <- "B-Intermediate")
+eng_age_group <- within(eng_age_group, age_category[age_category=="S"] <- "C-Senior")
 ##
 
-## if at Junior or Intermediate or Senior, Eng_Level ==  c(Ideal, Fair or Light) then color == c(Green, Yellow, Blue)
-alluvial(datAlluvial[,1:3],  # Eng_Level at J, I, S
-         freq=datAlluvial$n,  # counts of each unique combination
-         # colouring rules
-         col = ifelse(datAlluvial$Eng_Level.J == "D. Ideal (2+)", "green", 
-                      ifelse(datAlluvial$Eng_Level.I == "D. Ideal (2+)", "green",
-                             ifelse(datAlluvial$Eng_Level.S == "D. Ideal (2+)", "green",
-                                    ifelse(datAlluvial$Eng_Level.J == "C. Typical (1-2)", "yellow", 
-                                           ifelse(datAlluvial$Eng_Level.I == "C. Typical (1-2)", "yellow",
-                                                  ifelse(datAlluvial$Eng_Level.S == "C. Typical (1-2)", "yellow",
-                                                         ifelse(datAlluvial$Eng_Level.J == "B. Poor (0-1)", "sky blue", 
-                                                                ifelse(datAlluvial$Eng_Level.I == "B. Poor (0-1)", "sky blue",
-                                                                       ifelse(datAlluvial$Eng_Level.S == "B. Poor (0-1)", "sky blue", "#D3D3D3"))))))))),
-         axis_labels = c("Junior", "Intermediate", "Senior"),
-         #hide = datAlluvial$n < 10,
-         cex = 0.7)
+## Alluvial Plot
+ptm <- proc.time()
+ggplot(eng_age_group,
+       aes(x = age_category, stratum = Eng_Level, alluvium = d4g_member_id, fill = Eng_Level,
+           label = Eng_Level)) +
+  scale_fill_brewer(type = "qual", palette = "Set2") +
+  geom_flow(stat = "alluvium", lode.guidance = "frontback",
+            color = "darkgray") +
+  geom_stratum() +
+  theme(legend.position = "none") +
+  ggtitle("Member Engagement Journeys by Age Category (n = 19311)") +
+  geom_text(stat = "stratum", size = 3) +
+  labs(y="Count of Members (n)", x = "")
+proc.time() - ptm
+##
 ###
