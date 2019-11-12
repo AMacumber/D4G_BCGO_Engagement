@@ -25,26 +25,9 @@ program_df <- read.table("Program.txt", sep = "|", header = T, stringsAsFactors 
 ###
 
 
-### Data Exploration
-
-unique(attendance_df$mem_type)
-error_raw_neg1 <- filter(attendance_df, d4g_member_id == -1)
-
-min(as.Date(attendance_df$date_attended))
-
-unique(check_in_attendance_df$mem_type)
-unique(check_in_attendance_df$age_category)
-sort(unique(check_in_attendance_df$check_in_week))
-
-min(as.Date(check_in_attendance_df$date_attended))
-
-unique(check_in_Cohort_stats$Eng)
-
-error_neg1 <- filter(member_dim_cohort, d4g_member_id == -1)
-###
-
-
 ### Data Wrangling
+
+starting_obs <- nrow(attendance_df)
 
 ## select check-in info from program_df
 program_or_check_in_df <- program_df %>%
@@ -92,6 +75,10 @@ check_in_attendance_df <- attendance_df %>%
 rm(program_or_check_in_df)
 ##
 
+## Return change in dataset dimensions
+filtered_obs <- nrow(check_in_attendance_df)
+(filtered_obs/starting_obs)*100
+
 ## Table: number of weeks per Cohort (period & year)
 no_weeks_cohort <- check_in_attendance_df %>%
   
@@ -110,12 +97,12 @@ member_dim_cohort <- check_in_attendance_df %>%
 
 ## Function to categorize engagement level based on average visits per week
 engagementFunction <- function(x) {
-  if(x >= 2.00) {"Ideal"
-  } else if(x >= 1.00) {"Fair"
-  } else if(x >= 0.25) {"Light"
-  } else if(x >= 0.125) {"Poor"
-  } else if(x >= 0.001) {"Limited"
-  } else {"None"}
+  if(x >= 2.00) {"1. Ideal"
+  } else if(x >= 1.00) {"2. Fair"
+  } else if(x >= 0.25) {"3. Light"
+  } else if(x >= 0.125) {"4. Poor"
+  } else if(x >= 0.001) {"5. Limited"
+  } else {"6. None"}
 }
 ##
 
@@ -145,79 +132,83 @@ check_in_Cohort_stats <- check_in_attendance_df %>%
 ## Table: Member Engagement Status by Age_Group
 eng_age_group <- check_in_Cohort_stats %>%
   
+  # Group by: ID, Age_category
   group_by(d4g_member_id, age_category) %>%
   
+  # Return weekly mean for cohort
   summarize(Eng = mean(check_in_wk_avg_Cohort)) %>%
   
+  # Create dim: Eng Status for Cohort
   mutate(
     Eng_Level = engagementFunction(Eng)
   ) %>%
   
-### ATTEMPTING TO CREATE ENG.J, ENG.I, ENG.S FOR EACH MEMBER  
+  # Subset the dataframe with columns of interest
+  select(d4g_member_id, age_category, Eng_Level) %>%
   
-eng_age_group <-
+  # Create new dims; "variable" = Eng_Level; "value" = Eng_Level values
+  pivot_longer(c(-d4g_member_id, -age_category), names_to = "variable", values_to = "value") %>%
   
-  # start a pipeline
-  check_in_Cohort_stats %>%
-  
-  #  select variables of interest
-  select(d4g_member_id, age_category, depress, dep16) %>%
-  
-  # organise by ID, by treatment, by time
-  # create dim: "variable" (l: depressed, not depressed)
-  # create dim: "value" (l: depress value)
-  pivot_longer(c(-ID, -w1group, -time), names_to = "variable", values_to = "value") %>%
-  
-  # create dim: "variableT"; 
-  # pastes together "variable" and "time"
-  # pastes together "value" and "time"
-  unite(variableT, variable, time, sep=".") %>%
+  # New dim: combination of "variable" and "age_category" (ex., Eng_Level.S)
+  unite(variableT, variable, age_category, sep=".") %>%
   
   # breaks "variableT" into new columns
   spread(variableT, value)
 ##
 
 
-## Reshape check_in_groupings_df; add in additional metrics for complete year, engagement levels
-check_in_groupings_wide_df <- check_in_groupings_df %>%
-  spread(key = check_in_period, value = number_check_ins) %>%
-  rename(
-    school_total_visits = School,
-    summer_total_visits = Summer
-  ) %>%
-  mutate(
-    school_total_visits = ifelse(is.na(school_total_visits), 0, school_total_visits),
-    summer_total_visits = ifelse(is.na(summer_total_visits), 0, summer_total_visits),
-    year_total_visits = school_total_visits + summer_total_visits,
-    school_visits_per_week = round(school_total_visits / 40, digits = 2),
-    summer_visits_per_week = round(summer_total_visits / 8, digits = 2),
-    year_visits_per_week = round(year_total_visits / 48, digits = 2),
-    school_engagement_lvl = engagementFunction(school_visits_per_week),
-    summer_engagement_lvl = engagementFunction(summer_visits_per_week),
-    year_engagement_lvl = engagementFunction(year_visits_per_week),
-    ideal_engagement_flag = if(school_visits_per_week >= 2.00 | summer_visits_per_week >= 2.00) {TRUE
-    } else {FALSE},
-    highest_engagement_period = if(school_visits_per_week >= summer_visits_per_week) {"School"
-    } else {"Summer"},
-    #lowest_engagement_period = if(school_visits_per_week < summer_visits_per_week) {"School"
-    #} else {"Summer"},
-    year_engagement_profile = if(school_total_visits == 0) {"Summer Only"
-    } else if(summer_total_visits == 0) {"School Only"
-    } else {"Complete Year"},
-    higest_engagement_level = if(school_visits_per_week >= summer_visits_per_week) {
-      school_engagement_lvl
-    } else if (school_visits_per_week <= summer_visits_per_week) {
-      summer_engagement_lvl}
-  )
+## Return change in dataset dimensions
+group_obs <- nrow(eng_age_group)
+(group_obs/starting_obs)*100
+(group_obs/filtered_obs)*100
+
+
+## alluvial prep
+datAlluvial <-
+  
+  # start a pipeline
+  eng_age_group %>%
+  
+  # dep16 is a binary indicator of depression
+  group_by(Eng_Level.J, Eng_Level.I, Eng_Level.S) %>%
+  
+  # create dim: "n" count of each of unique combos of dep16 at time 1,2,3,4
+  summarise(n = n()) #%>%
 ##
 
-## Remove numeric columns for final table format
-check_in_groupings_final_df <- check_in_groupings_wide_df %>%
-  select(-school_total_visits, -summer_total_visits, -year_total_visits,
-         -school_visits_per_week, -summer_visits_per_week, -year_visits_per_week) %>%
-  mutate(
-    record_count = 1,
-    higest_engagement_level = factor(higest_engagement_level, c("Ideal", "Average", "Light", "Poor", "Limited", "None"))
-  )
+
+## Return change in dataset dimensions
+alluvial_obs <- sum(datAlluvial$n)
+(alluvial_obs/starting_obs)*100
+(alluvial_obs/filtered_obs)*100
+(alluvial_obs/group_obs)*100  # no change
+
+
+## Alluvial diagram
+
+# Load library and create display window
+library(alluvial)
+windows(10,7)
+#
+
+# Change 'na' to "6. None"
+datAlluvial[is.na(datAlluvial)] <- "6. None"
+#
+
+# if at Junior or Intermediate Ideal, Fair or Light highlight Green, Yellow, Blue
+alluvial(datAlluvial[,1:3],  # Eng_Level at J, I, S
+         freq=datAlluvial$n,  # counts of each unique combination
+         col = ifelse(datAlluvial$Eng_Level.J == "1. Ideal", "green", 
+                      ifelse(datAlluvial$Eng_Level.I == "1. Ideal", "green",
+                             ifelse(datAlluvial$Eng_Level.S == "1. Ideal", "green",
+                                    ifelse(datAlluvial$Eng_Level.J == "2. Fair", "yellow", 
+                                           ifelse(datAlluvial$Eng_Level.I == "2. Fair", "yellow",
+                                                  ifelse(datAlluvial$Eng_Level.S == "2. Fair", "yellow",
+                                                         ifelse(datAlluvial$Eng_Level.J == "3. Light", "sky blue", 
+                                                                ifelse(datAlluvial$Eng_Level.I == "3. Light", "sky blue",
+                                                                       ifelse(datAlluvial$Eng_Level.S == "3. Light", "sky blue", "#D3D3D3"))))))))),
+         axis_labels = c("Junior", "Intermediate", "Senior"),
+         hide = datAlluvial$n < 10,
+         cex = 0.7)
 ##
 ###
