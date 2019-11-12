@@ -2,18 +2,22 @@
 ## Author: Andrew Macumber
 ###
 
-rm(list = ls())
 
-### load required libraries
+### Prepare Work Space
+
+## Empty work space
+rm(list = ls())
+##
+
+## load required libraries
 library(janitor)
 library(dplyr)
 library(lubridate)
 library(tidyr)
 library(ggplot2)
-###
+##
 
-
-### Import data files
+## Import data files
 attendance_df <- read.table("Attendance.txt", sep = "|", header = T, stringsAsFactors = F) %>%
   clean_names()
 
@@ -22,12 +26,10 @@ member_df <- read.table("Member.txt", sep = "|", header = T, fill = T, stringsAs
 
 program_df <- read.table("Program.txt", sep = "|", header = T, stringsAsFactors = F) %>%
   clean_names()
+##
 ###
 
-
 ### Data Wrangling
-
-starting_obs <- nrow(attendance_df)
 
 ## select check-in info from program_df
 program_or_check_in_df <- program_df %>%
@@ -75,10 +77,6 @@ check_in_attendance_df <- attendance_df %>%
 rm(program_or_check_in_df)
 ##
 
-## Return change in dataset dimensions
-filtered_obs <- nrow(check_in_attendance_df)
-(filtered_obs/starting_obs)*100
-
 ## Table: number of weeks per Cohort (period & year)
 no_weeks_cohort <- check_in_attendance_df %>%
   
@@ -104,7 +102,7 @@ engagementFunction <- function(x) {
 }
 ##
 
-## Table: Member Return weekly counts and averages w/ member attributes
+## Table: Member attributes, Cohort check-in counts and weekly averages
 check_in_Cohort_stats <- check_in_attendance_df %>%
   
   # Group by ID, Cohort
@@ -127,7 +125,7 @@ check_in_Cohort_stats <- check_in_attendance_df %>%
   left_join(member_dim_cohort, by = c("d4g_member_id" = "d4g_member_id", "Cohort" = "Cohort"))
 ##
 
-## Table: Member Engagement Status by Age_Group
+## Table: Member Engagement Status (Ideal, Typical, Poor, None) by Age_Group (Junior, Intermediate, Senior)
 eng_age_group <- check_in_Cohort_stats %>%
   
   # Group by: ID, Age_category
@@ -153,49 +151,37 @@ eng_age_group <- check_in_Cohort_stats %>%
   # breaks "variableT" into new columns
   spread(variableT, value)
 ##
+###
 
 
-## Return change in dataset dimensions
-group_obs <- nrow(eng_age_group)
-(group_obs/starting_obs)*100
-(group_obs/filtered_obs)*100
+### Alluvial diagram
 
-
-## alluvial prep
+## Data prep for Alluvial diagram
 datAlluvial <-
   
   # start a pipeline
   eng_age_group %>%
   
-  # dep16 is a binary indicator of depression
+  # Establish grouping order
   group_by(Eng_Level.J, Eng_Level.I, Eng_Level.S) %>%
   
-  # create dim: "n" count of each of unique combos of dep16 at time 1,2,3,4
+  # create dim: "n" count of each of unique combos of Eng_Level at time Junior, Intermediate, Senior
   summarise(n = n()) #%>%
 ##
 
-
-## Return change in dataset dimensions
-alluvial_obs <- sum(datAlluvial$n)
-(alluvial_obs/starting_obs)*100
-(alluvial_obs/filtered_obs)*100
-(alluvial_obs/group_obs)*100  # no change
-
-
-## Alluvial diagram
-
-# Load library and create display window
+## Load library and create display window
 library(alluvial)
 windows(10,7)
-#
+##
 
-# Change 'na' to "6. None"
+## Change 'na' to "A. None"
 datAlluvial[is.na(datAlluvial)] <- "A. None (0)"
-#
+##
 
-# if at Junior or Intermediate Ideal, Fair or Light highlight Green, Yellow, Blue
+## if at Junior or Intermediate or Senior, Eng_Level ==  c(Ideal, Fair or Light) then color == c(Green, Yellow, Blue)
 alluvial(datAlluvial[,1:3],  # Eng_Level at J, I, S
          freq=datAlluvial$n,  # counts of each unique combination
+         # colouring rules
          col = ifelse(datAlluvial$Eng_Level.J == "D. Ideal (2+)", "green", 
                       ifelse(datAlluvial$Eng_Level.I == "D. Ideal (2+)", "green",
                              ifelse(datAlluvial$Eng_Level.S == "D. Ideal (2+)", "green",
