@@ -97,12 +97,10 @@ member_dim_cohort <- check_in_attendance_df %>%
 
 ## Function to categorize engagement level based on average visits per week
 engagementFunction <- function(x) {
-  if(x >= 2.00) {"1. Ideal"
-  } else if(x >= 1.00) {"2. Fair"
-  } else if(x >= 0.25) {"3. Light"
-  } else if(x >= 0.125) {"4. Poor"
-  } else if(x >= 0.001) {"5. Limited"
-  } else {"6. None"}
+  if(x >= 2.00) {"D. Ideal (2+)"
+  } else if(x >= 1.00) {"C. Typical (1-2)"
+  } else if(x >= 0) {"B. Poor (0-1)"
+  } else {"A. None (0)"}
 }
 ##
 
@@ -192,23 +190,23 @@ windows(10,7)
 #
 
 # Change 'na' to "6. None"
-datAlluvial[is.na(datAlluvial)] <- "6. None"
+datAlluvial[is.na(datAlluvial)] <- "A. None (0)"
 #
 
 # if at Junior or Intermediate Ideal, Fair or Light highlight Green, Yellow, Blue
 alluvial(datAlluvial[,1:3],  # Eng_Level at J, I, S
          freq=datAlluvial$n,  # counts of each unique combination
-         col = ifelse(datAlluvial$Eng_Level.J == "1. Ideal", "green", 
-                      ifelse(datAlluvial$Eng_Level.I == "1. Ideal", "green",
-                             ifelse(datAlluvial$Eng_Level.S == "1. Ideal", "green",
-                                    ifelse(datAlluvial$Eng_Level.J == "2. Fair", "yellow", 
-                                           ifelse(datAlluvial$Eng_Level.I == "2. Fair", "yellow",
-                                                  ifelse(datAlluvial$Eng_Level.S == "2. Fair", "yellow",
-                                                         ifelse(datAlluvial$Eng_Level.J == "3. Light", "sky blue", 
-                                                                ifelse(datAlluvial$Eng_Level.I == "3. Light", "sky blue",
-                                                                       ifelse(datAlluvial$Eng_Level.S == "3. Light", "sky blue", "#D3D3D3"))))))))),
+         col = ifelse(datAlluvial$Eng_Level.J == "D. Ideal (2+)", "green", 
+                      ifelse(datAlluvial$Eng_Level.I == "D. Ideal (2+)", "green",
+                             ifelse(datAlluvial$Eng_Level.S == "D. Ideal (2+)", "green",
+                                    ifelse(datAlluvial$Eng_Level.J == "C. Typical (1-2)", "yellow", 
+                                           ifelse(datAlluvial$Eng_Level.I == "C. Typical (1-2)", "yellow",
+                                                  ifelse(datAlluvial$Eng_Level.S == "C. Typical (1-2)", "yellow",
+                                                         ifelse(datAlluvial$Eng_Level.J == "B. Poor (0-1)", "sky blue", 
+                                                                ifelse(datAlluvial$Eng_Level.I == "B. Poor (0-1)", "sky blue",
+                                                                       ifelse(datAlluvial$Eng_Level.S == "B. Poor (0-1)", "sky blue", "#D3D3D3"))))))))),
          axis_labels = c("Junior", "Intermediate", "Senior"),
-         hide = datAlluvial$n < 10,
+         #hide = datAlluvial$n < 10,
          cex = 0.7)
 ##
 ###
