@@ -85,13 +85,6 @@ no_weeks_cohort <- check_in_attendance_df %>%
   summarize(no_weeks = max(check_in_week))
 ##
 
-## Table: Member Attributes by Cohort
-member_dim_cohort <- check_in_attendance_df %>%
-  
-  select(d4g_member_id, member_location, sex, member_age, age_category, Cohort) %>%
-  
-  group_by(d4g_member_id, Cohort)
-##
 
 ## Function to categorize engagement level based on average visits per week
 engagementFunction <- function(x) {
@@ -102,11 +95,11 @@ engagementFunction <- function(x) {
 }
 ##
 
-## Table: Member attributes, Cohort check-in counts and weekly averages
+## WORKING Table: Member attributes, Cohort check-in counts and weekly averages
 check_in_Cohort_stats <- check_in_attendance_df %>%
   
   # Group by ID, Cohort
-  group_by(d4g_member_id, Cohort) %>%
+  group_by(d4g_member_id, Cohort, age_category) %>%
   
   # Return week counts
   summarize(check_in_count_Cohort = n()) %>%
@@ -121,9 +114,13 @@ check_in_Cohort_stats <- check_in_attendance_df %>%
     Eng = engagementFunction(check_in_wk_avg_Cohort)
   ) %>%
   
+  unite(Cohort.Member, d4g_member_id, Cohort, sep ='.')
+  
   # Add member attributes
-  left_join(member_dim_cohort, by = c("d4g_member_id" = "d4g_member_id", "Cohort" = "Cohort"))
+  #left_join(member_df, by = "d4g_member_id")
 ##
+
+test <- check_in_Cohort_stats[!duplicated(check_in_Cohort_stats[,'Cohort.Member']),]
 
 
 ### Alluvial Diagram (function ggalluvial)
@@ -132,6 +129,24 @@ check_in_Cohort_stats <- check_in_attendance_df %>%
 library(ggalluvial)
 set.seed(2564)
 windows(10,7)
+##
+
+## WORKING Table: Member Engagement Status (Ideal, Typical, Poor, None) by Age_Group (Junior, Intermediate, Senior)
+eng_age_group <- test %>%
+  
+  # Group by: ID, Age_category
+  group_by(Cohort.Member, age_category) %>%
+  
+  # Return weekly mean for cohort
+  summarize(Eng = mean(check_in_wk_avg_Cohort)) %>%
+  
+  # Create dim: Eng Status for Cohort
+  mutate(
+    Eng_Level = engagementFunction(Eng)
+  ) %>%
+  
+  # Subset the dataframe with columns of interest
+  select(Cohort.Member, age_category, Eng_Level) #%>%
 ##
 
 ## Table: Member Engagement Status (Ideal, Typical, Poor, None) by Age_Group (Junior, Intermediate, Senior)
@@ -173,10 +188,15 @@ plot_data <- eng_age_group[index,]  # subset
 ## Alluvial Plot
 ptm <- proc.time()
 ggplot(plot_data,
-       aes(x = age_category, stratum = Eng_Level, alluvium = d4g_member_id, fill = Eng_Level,
+       aes(x = age_category,
+           stratum = Eng_Level,
+           alluvium = Cohort.Member,
+           fill = Eng_Level,
            label = Eng_Level)) +
-  scale_fill_brewer(type = "qual", palette = "Set2") +
-  geom_flow(stat = "alluvium", lode.guidance = "frontback",
+  scale_fill_brewer(type = "qual",
+                    palette = "Set2") +
+  geom_flow(stat = "alluvium",
+            lode.guidance = "frontback",
             color = "darkgray") +
   geom_stratum() +
   theme(legend.position = "none") +
