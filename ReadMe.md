@@ -9,9 +9,11 @@ Based on member check-ins we would like to investigate trends in Engagement as k
 Is provided by D4G. It is sensitive and only available by permission.
 
 # Active Scripts
-* ggAlluvial - Engagement by Age Category
-* ggAlluvial - Engagement by Age Category - WORKING
+* ggAlluvial - Engagement by Age Category, Fiscal
+
 
 # Former Scripts
 * Engagement Levels by Member and Year - Number of Members grouped by Engagement Status
 * Alluvial - Engagement by Age Category
+* ggAlluvial - Engagement by Age Category
+* ggAlluvial - Engagement by Age Category, Fiscal, Junior only
