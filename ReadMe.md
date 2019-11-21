@@ -3,13 +3,23 @@
 # Engagement Analyses of June Refresh
 
 # Description
-Based on member check-ins we would like to investigate trends in Engagement as kids age and during the first several years of their membership with BGCO
+Perform Engagement Analyses using member check-ins.
 
 # Data
-Is provided by D4G. It is sensitive and only available by permission.
+Protected. Provided by D4G.
 
 # Active Scripts
-* ggAlluvial - Engagement by Age Category, Fiscal
+
+**Wrangle**
+* Import Attendance, Programs and Member datasets
+* Adjust, clean, transform data for another scripts
+
+**ggAlluvial_AgeCategory_Fiscal**
+* Run after **Wrangle**
+* For members found in both Attendance and Member, 2009-2018
+
+**Members_Unique_Stats**
+* Small analysis to compare unique members found in Attendance and Member data
 
 
 # Former Scripts
