@@ -23,10 +23,10 @@ member_engagement_fiscal <- member_engagement_fiscal %>%
   mutate_at(vars(-d4g_member_id), funs(ifelse(is.na(.), ifelse(age <= 10, "Not Old Enough",
                                                                ifelse(age <= 13, "Not Old Enough", "Never Attended")), .))) %>%
   
-  # Remove age information
+  # Remove age information and member id
   select(-d4g_member_id, -age) #%>%
 
-# Count: Junior to Intermediate
+# Count: Junior to Intermediate Journeys
 Jun_Int <- member_engagement_fiscal %>%
   
   select(J, I) %>%
@@ -76,8 +76,6 @@ names(Int_Sen) <- c("source", "target", "value")
 
 sankey_data <- rbind(as.data.frame(Jun_Int), as.data.frame(Int_Sen))
 
-colnames(Int_Sen)
-
 #
 ## Prep Workspace
 
@@ -108,9 +106,14 @@ links = sankey_data
 
 #
 ## Plot
-sankeyNetwork(Links = links, Nodes = nodes,
-              Source = "source", Target = "target",
-              Value = "value", NodeID = "name",
-              fontSize= 12, nodeWidth = 30)
+windows()
+sankeyNetwork(Links = links,
+              Nodes = nodes,
+              Source = "source",
+              Target = "target",
+              Value = "value",
+              NodeID = "name",
+              fontSize= 12,
+              nodeWidth = 30)
 ##
 #
