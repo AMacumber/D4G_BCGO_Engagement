@@ -1,13 +1,15 @@
 # Sankey Diagram
-# URL - https://www.r-bloggers.com/creating-custom-sankey-diagrams-using-r/
-
-# Step 03 Alluvial Fiscal
+# Tutorial URL - https://www.r-bloggers.com/creating-custom-sankey-diagrams-using-r/
 # Author: Andrew Macumber
 
 #
-## Convert NAs to "Never Attended" or "Not Old Enough"
+## Goal
+# Display engagement journeys using Sankey diagrams
+##
+#
 
-# Define: "Never Attended" & "Not Old Enough"
+#
+## Define: "Never Attended" & "Not Old Enough"
 member_engagement_fiscal <- member_engagement_fiscal %>%
   
   # Subset the dataframe with columns of interest
@@ -24,70 +26,117 @@ member_engagement_fiscal <- member_engagement_fiscal %>%
                                                                ifelse(age <= 13, "Not Old Enough", "Never Attended")), .))) %>%
   
   # Remove age information and member id
-  select(-d4g_member_id, -age) #%>%
+  select(J, I, S)
+##
+#
 
-# Count: Junior to Intermediate Journeys
-Jun_Int <- member_engagement_fiscal %>%
+#
+## Count: All Journeys
+journeys_all <- member_engagement_fiscal %>%
   
-  select(J, I) %>%
-  
-  group_by(J, I) %>%
+  # Group and count journeys
+  group_by(J, I, S) %>%
   summarise(Freq = n()) %>%
+  ungroup() %>%
   
-  filter(J != "Not Old Enough") %>%
+  # 'Left' == (Junior Engaged to Int,Sen == 'Never Attended')
+  within(I[I=="Never Attended" & S == "Never Attended"] <- 'Left') %>%
+  within(S[S=="Never Attended"] <- 'Left') %>%
   
+  # 'Not Old Enough' Intermediates, should be same for Senior
+  within(S[I=="Not Old Enough"] <- 'Not Old Enough') %>%
+  
+  # Remove 'Not Old Enough' Juniors
+  filter(J != 'Not Old Enough') %>%
+  
+  # 'Skipped' == (Junior, Senior Engaged but Int 'Never Attended')
+  within(I[I=="Never Attended" & J != 'Never Attended' & S != 'Never Attended'] <- 'Skip Int.')
+
+#
+## Count: Junior to Intermediate Journeys
+journeys_J_I <- journeys_all %>%
+  
+  # Select columns of interest
+  select(J, I, Freq) %>%
+  
+  # Group and count journeys
+  group_by(J, I) %>%
+  summarise(Freq = sum(Freq)) %>%
+  ungroup() %>%
+  
+  # Remove non-Juniors,Intermediates
+  filter(J != "Never Attended" | I != "Never Attended") %>%
+  
+  # Assign "Never Attended" Juniors to "Skip Jun."
+  within(J[J=="Never Attended"] <- "Skip Jun.") %>%
+  
+  # Convert Junior cateories to numbers
   within(J[J=="A. Ideal (2+)"] <- 0) %>%
   within(J[J=="B. Moderate (0.5-2)"] <- 1) %>%
   within(J[J=="C. Low (< 0.5)"] <- 2) %>%
-  within(J[J=="Never Attended"] <- 3) %>%
+  within(J[J=="Skip Jun."] <- 12) %>%
   
-  within(I[I=="A. Ideal (2+)"] <- 4) %>%
-  within(I[I=="B. Moderate (0.5-2)"] <- 5) %>%
-  within(I[I=="C. Low (< 0.5)"] <- 6) %>%
-  within(I[I=="Never Attended"] <- 7) %>%
-  within(I[I=="Not Old Enough"] <- 8)
-
-names(Jun_Int) <- c("source", "target", "value")
-  
-
-# Count: Intermediate to Senior
-Int_Sen <- member_engagement_fiscal %>%
-  
-  select(I, S) %>%
-  
-  group_by(I, S) %>%
-  summarise(Freq = n()) %>%
-  
-  filter(Freq > 2) %>%
-  
-  within(I[I=="A. Ideal (2+)"] <- 4) %>%
-  within(I[I=="B. Moderate (0.5-2)"] <- 5) %>%
-  within(I[I=="C. Low (< 0.5)"] <- 6) %>%
-  within(I[I=="Never Attended"] <- 7) %>%
-  within(I[I=="Not Old Enough"] <- 8) %>%
-  
-  within(S[S=="A. Ideal (2+)"] <- 9) %>%
-  within(S[S=="B. Moderate (0.5-2)"] <- 10) %>%
-  within(S[S=="C. Low (< 0.5)"] <- 11) %>%
-  within(S[S=="Never Attended"] <- 12) %>%
-  within(S[S=="Not Old Enough"] <- 13)
-
-names(Int_Sen) <- c("source", "target", "value")
-
-sankey_data <- rbind(as.data.frame(Jun_Int), as.data.frame(Int_Sen))
-
-# Check the object class
-sapply(sankey_data, class)
-
-# Convert to numeric
-i <- c(1, 2, 3)
-
-sankey_data[ , i] <- apply(sankey_data[ , i], 2,  # Specify own function within apply
-                    function(x) as.numeric(as.character(x)))
-
+  # Convert Intermediate categories to numbers
+  within(I[I=="A. Ideal (2+)"] <- 3) %>%
+  within(I[I=="B. Moderate (0.5-2)"] <- 4) %>%
+  within(I[I=="C. Low (< 0.5)"] <- 5) %>%
+  within(I[I=="Not Old Enough"] <- 6) %>%
+  within(I[I=="Left"] <- 10) %>%
+  within(I[I=="Skip Int."] <- 11)
+##
+#
 
 #
-## Prep Workspace
+## Count: Intermediate to Senior journeys
+journeys_I_S <- journeys_all %>%
+  
+  # Select Intermediate and Senior
+  select(I, S, Freq) %>%
+  
+  # Group and count
+  group_by(I, S) %>%
+  summarise(Freq = sum(Freq)) %>%
+  ungroup() %>%
+  
+  # Remove unchanged categories
+  filter(I != 'Not Old Enough' | S != 'Not Old Enough') %>%
+  filter(I != 'Left' | S != 'Left') %>%
+  
+  # Assign "Never Attended" Intermediate to "Skip Int."
+  within(I[I=="Never Attended"] <- "Skip Int.") %>%
+
+  within(I[I=="A. Ideal (2+)"] <- 3) %>%
+  within(I[I=="B. Moderate (0.5-2)"] <- 4) %>%
+  within(I[I=="C. Low (< 0.5)"] <- 5) %>%
+  within(I[I=="Not Old Enough"] <- 6) %>%
+  within(I[I=="Skip Int."] <- 11) %>%
+  
+  within(S[S=="A. Ideal (2+)"] <- 7) %>%
+  within(S[S=="B. Moderate (0.5-2)"] <- 8) %>%
+  within(S[S=="C. Low (< 0.5)"] <- 9) %>%
+  within(S[S=="Not Old Enough"] <- 6) %>%
+  within(S[S=='Left'] <- 10)
+##
+#
+
+#
+## Rename columns for sankey function
+names(journeys_J_I) <- c("source", "target", "value")
+names(journeys_I_S) <- c("source", "target", "value")
+##
+#
+
+#
+## Create final dataframe, convert to numeric
+sankey_data <- rbind(as.data.frame(journeys_J_I), as.data.frame(journeys_I_S))
+i <- c(1, 2, 3)
+sankey_data[ , i] <- apply(sankey_data[ , i], 2,  # Specify own function within apply
+                    function(x) as.numeric(as.character(x)))
+##
+#
+
+#
+## Create Sankey Plot
 
 # Load Libraries
 library(networkD3)
@@ -97,33 +146,26 @@ nodes = data.frame("name" =
                      c("Ideal Jun.", # Node 0
                        "Moderate Jun.", # Node 1
                        "Low Jun.", # Node 2
-                       "Never Attended Jun.",  # Node 3
-                       "Ideal Int", # Node 4
-                       "Moderate Int",  # Node 5
-                       "Low Int",  # Node 6
-                       "Never Attended Int",  # Node 7
-                       "Not Old Enough Int",  # Node 8
-                       "Ideal Sen", # Node 9
-                       "Moderate Sen",  # Node 10
-                       "Low Sen",  # Node 11
-                       "Never Attended Sen",  # Node 12
-                       "Not Old Enough Sen"))  # Node 13
+                       "Ideal Int", # Node 3
+                       "Moderate Int",  # Node 4
+                       "Low Int",  # Node 5
+                       "Not Old Enough",  # Node 6
+                       "Ideal Sen", # Node 7
+                       "Moderate Sen",  # Node 8
+                       "Low Sen",  # Node 9
+                       "Left", # Node 10
+                       "Skip Int.",  # Node 11
+                       "Skip Jun." # Node 12
+                       ))
 
-# Create your links
-links = sankey_data
-##
-#
-
-#
-## Plot
-windows()
-sankeyNetwork(Links = links,
+# Plot
+sankeyNetwork(Links = sankey_data,
               Nodes = nodes,
               Source = "source",
               Target = "target",
               Value = "value",
               NodeID = "name",
-              fontSize= 12,
+              fontSize= 18,
               nodeWidth = 30)
 ##
 #
