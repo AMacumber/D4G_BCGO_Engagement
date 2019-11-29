@@ -76,6 +76,16 @@ names(Int_Sen) <- c("source", "target", "value")
 
 sankey_data <- rbind(as.data.frame(Jun_Int), as.data.frame(Int_Sen))
 
+# Check the object class
+sapply(sankey_data, class)
+
+# Convert to numeric
+i <- c(1, 2, 3)
+
+sankey_data[ , i] <- apply(sankey_data[ , i], 2,  # Specify own function within apply
+                    function(x) as.numeric(as.character(x)))
+
+
 #
 ## Prep Workspace
 
