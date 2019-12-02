@@ -1,7 +1,14 @@
 # Instructions for Engagement Repository
 * Master Repository URL: git@github.com:AMacumber/D4G_BCGO_Engagement.git
 
-## SETUP GIT
+## CREATE A GITHUB ACCOUNT
+
+1. https://github.com/
+
+2. Fork a copy of https://github.com/AMacumber/D4G_BCGO_Engagement to your Git Hub account
+
+
+## SETUP GIT & CREATE LOCAL COPY OF REPOSITORY
 
 1. Download and install Git: https://git-scm.com/
 
@@ -26,11 +33,11 @@
 
   > git pull origin
 
-3. Switch to the project branch. Example, Alluvial_Age_Fiscal_Boys
+3. Switch to the specific project branch. Example, Sankey_Age_Fiscal_Boys
 
-  > git checkout Alluvial_Age_Fiscal_Boys
+  > git checkout Sankey_Age_Fiscal_Boys
 
-4. Make some changes to the files
+4. Create and modify files.
 
 5. Check the status of files within your repository
 
