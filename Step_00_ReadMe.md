@@ -3,7 +3,7 @@
 # Project: **Engagement Journeys (June Refresh)**
 
 ## Description
-We will use Alluvial/Sankey diagrams to show how members engagement (visits per week) levels change over time. These will be organised by two perspectives: a member's first five years and by age categories (Junior, Intermediate, Senior).
+We will use Sankey diagrams to show how members engagement (visits per week) levels change over time. These will be organised by two perspectives: a member's first five years and by age categories (Junior, Intermediate, Senior).
 
 The goal is to highlight 'groups of members' that would be of interest to the client. This interest could be due to the loss (or churn) of members or an increase in engagement levels.
 
@@ -21,15 +21,15 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Create new columns: date, year, month, week, period
 * Include only members that are also in Members_df
 
-**Step 02 Prep Engagement Fiscal**
-* Filter for Fiscal Period Only
+**Step 02 Prep Engagement (Year / Age)**
+* Filter for Calendar Period
 * Calculate number of weeks in Period
 * Calculate engagement stats
 * Translate engagement stats to categories
 
-**Step 03 Alluvial Fiscal**
-* Define 'Never Attended' and 'Not Old Enough'
-* Prep according to ggAlluvial specifications
+**Step 03 Sankey (Year / Age)**
+* (Age Only) Define 'Never Attended' and 'Not Old Enough'
+* Prep according to network3D specifications
 * Plot
 
 **Test_Members_Unique_Stats**
