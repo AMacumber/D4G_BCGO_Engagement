@@ -4,7 +4,7 @@
 
 #
 ## Filter for Fiscal Year period
-member_visits_fiscal <- member_visits %>%
+member_visits_calendar <- member_visits %>%
   
   # Fiscal Years 2009 to 2018
   filter(check_in_year >= "2009") %>%
@@ -18,8 +18,7 @@ member_visits_fiscal <- member_visits %>%
 
 #
 ## Calculate first year of engagement by d4g_member_id
-
-Member_Year1 <- member_visits_fiscal %>%
+Member_Year1 <- member_visits_calendar %>%
   group_by(d4g_member_id) %>%
   summarise(
     first_year_checked_in = min(check_in_year),
@@ -30,7 +29,7 @@ Member_Year1 <- member_visits_fiscal %>%
 
 #
 ## Merge Year1 values and calculate relative year of engagement, filter to first five years
-member_visits_fiscal_5year <- member_visits_fiscal %>%
+member_visits_5year <- member_visits_calendar %>%
   
   # Add Year1 columns
   left_join(Member_Year1, by = "d4g_member_id") %>%
@@ -50,25 +49,17 @@ member_visits_fiscal_5year <- member_visits_fiscal %>%
 #
 
 #
-## Calculate the number of weeks in a period
-no_weeks <- member_visits_fiscal %>%
-  
-  group_by(check_in_year) %>%
-  
-  summarize(no_weeks = max(check_in_week))
-
+## Number of weeks: Fiscal (48), School (40), Summer (8)
+no_weeks <- 48
 ##
 #
 
 #
 ## Calculate stats: visits per week, average visits per week
-member_engagement_avg <- member_visits_fiscal_5year %>%
-  
-  # Add number of weeks
-  left_join(no_weeks, by = "check_in_year") %>%
+member_engagement <- member_visits_5year %>%
   
   # Group by ID, Cohort
-  group_by(d4g_member_id, relative_year, no_weeks) %>%
+  group_by(d4g_member_id, relative_year) %>%
   
   # Return week counts
   summarize(checkin_total = n()) %>%
@@ -85,7 +76,7 @@ member_engagement_avg <- member_visits_fiscal_5year %>%
 
 #
 ## Define: "Never Attended" & "Not Old Enough"
-member_engagement_level <- member_engagement_avg %>%
+member_engagement_levels <- member_engagement %>%
   
   # Subset the dataframe with columns of interest
   select(d4g_member_id, relative_year, checkin_avg) %>%
