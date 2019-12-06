@@ -71,7 +71,7 @@ member_engagement_summer <- member_engagement_summer %>%
   mutate(
     Eng_Level = ifelse(checkin_avg_age >= 2, "A. Ideal (2+)", 
                        ifelse(checkin_avg_age >= 0.5, "B. Moderate (0.5-2)",
-                              ifelse(checkin_avg_age > 0, "C. Low (< 0.5)",
+                              ifelse(checkin_avg_age > 0, "C. Limited (< 0.5)",
                                      "D. None (0)")))) %>%
   
   # Select dim of interest
