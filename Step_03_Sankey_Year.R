@@ -22,7 +22,10 @@ journeys_all <- member_engagement_levels %>%
   within(Y2[Y2=="Absent" & Y3 == "Absent" & Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
   within(Y3[Y3 == "Absent" & Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
   within(Y4[Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
-  within(Y5[Y5 == "Absent"] <- 'Left')
+  within(Y5[Y5 == "Absent"] <- 'Left') %>%
+  
+  # Remove Absent
+  filter(Y2 != 'Absent', Y3 != 'Absent', Y4 != 'Absent')
 
 #
 ## Count: Junior to Intermediate Journeys
@@ -131,7 +134,7 @@ nodes <- data.frame(
 )
 
 # Create a group column in nodes
-nodes$group <- c("Ideal", "Limited", "Absent", "Ideal", "Left", "Limited", "Absent", "Ideal", "Left", "Limited", "Absent", "Ideal", "Left", "Limited", "Ideal", "Limited", "Left")
+nodes$group <- c("Ideal", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited")
 
 # Create your Link Groups
 links$group <- nodes$group[match(links$source, nodes$name)]
@@ -141,7 +144,7 @@ links$IDsource <- match(links$source, nodes$name)-1
 links$IDtarget <- match(links$target, nodes$name)-1
 
 # prepare color scale: I give one specific color for each node.
-my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Absent", "Left"]) .range(["#89C349", "#AA87BC", "#DCDCDC", "#656666"])'
+my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Left"]) .range(["#89C349", "#AA87BC", "#656666"])'
 ##
 #
 
