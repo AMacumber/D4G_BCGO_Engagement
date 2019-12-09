@@ -8,7 +8,14 @@ member_visits_calendar <- member_visits %>%
   
   # Fiscal Years 2009 to 2018
   filter(check_in_year >= "2009") %>%
-  filter(check_in_year <= "2018") %>%
+  filter(check_in_year <= "2019") %>%
+  
+  # Filter for School Period
+  filter(check_in_period == "School") %>%
+  
+  # Create dim: Eng_Level based on checkin_avg_age
+  mutate(
+    school_year = ifelse(check_in_month > 8, check_in_year, check_in_year - 1)) %>%
   
   # Select relevant dimensions
   select(d4g_member_id, mem_type, sex, member_age, age_category, check_in_date, check_in_year, check_in_month, check_in_week)
@@ -50,7 +57,7 @@ member_visits_5year <- member_visits_calendar %>%
 
 #
 ## Number of weeks: Fiscal (48), School (40), Summer (8)
-no_weeks <- 48
+no_weeks <- 40
 ##
 #
 
