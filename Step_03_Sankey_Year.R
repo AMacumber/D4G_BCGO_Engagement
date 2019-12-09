@@ -131,7 +131,7 @@ nodes <- data.frame(
 )
 
 # Create a group column in nodes
-nodes$group <- c("Ideal", "Limited", "Moderate", "Absent", "Ideal", "Left", "Limited", "Moderate", "Absent", "Ideal", "Left", "Limited", "Moderate", "Absent", "Ideal", "Left", "Limited", "Moderate", "Ideal", "Limited", "Moderate", "Left")
+nodes$group <- c("Ideal", "Limited", "Absent", "Ideal", "Left", "Limited", "Absent", "Ideal", "Left", "Limited", "Absent", "Ideal", "Left", "Limited", "Ideal", "Limited", "Left")
 
 # Create your Link Groups
 links$group <- nodes$group[match(links$source, nodes$name)]
@@ -141,7 +141,7 @@ links$IDsource <- match(links$source, nodes$name)-1
 links$IDtarget <- match(links$target, nodes$name)-1
 
 # prepare color scale: I give one specific color for each node.
-my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Moderate", "Absent", "Left"]) .range(["#89C349", "#DCDCDC", "#AA87BC", "#a0a1a1", "#656666"])'
+my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Absent", "Left"]) .range(["#89C349", "#AA87BC", "#DCDCDC", "#656666"])'
 ##
 #
 
@@ -150,7 +150,7 @@ my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Moderate", "Absent"
 p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget", 
                    Value = "value", NodeID = "name", LinkGroup="group", NodeGroup="group",
                    colourScale = my_color, 
-                   fontSize = 24,
+                   fontSize = 56,
                    nodeWidth = 30)
 p
 ##

@@ -96,29 +96,24 @@ member_engagement_levels <- member_engagement %>%
   
   # Add Engagment Levels
   mutate(
-    Y1 = ifelse(Y1 >= 2, "Ideal (2+)", 
-               ifelse(Y1 >= 0.5, "Moderate (0.5-2)",
-                      ifelse(Y1 > 0, "Limited (< 0.5)",
-                             "Absent"))),
+    Y1 = ifelse(Y1 >= 1, "Ideal (1+)", 
+               ifelse(Y1 > 0, "Limited (<1)",
+                      "Absent")),
 
-    Y2 = ifelse(Y2 >= 2, "Ideal (2+)", 
-                ifelse(Y2 >= 0.5, "Moderate (0.5-2)",
-                       ifelse(Y2 > 0, "Limited (< 0.5)",
-                              "Absent"))),
+    Y2 = ifelse(Y2 >= 1, "Ideal (1+)", 
+                ifelse(Y2 > 0, "Limited (<1)",
+                       "Absent")),
     
-    Y3 = ifelse(Y3 >= 2, "Ideal (2+)", 
-                ifelse(Y3 >= 0.5, "Moderate (0.5-2)",
-                       ifelse(Y3 > 0, "Limited (< 0.5)",
-                              "Absent"))),
+    Y3 = ifelse(Y3 >= 1, "Ideal (1+)", 
+                ifelse(Y3 > 0, "Limited (<1)",
+                       "Absent")),
     
-    Y4 = ifelse(Y4 >= 2, "Ideal (2+)", 
-                ifelse(Y4 >= 0.5, "Moderate (0.5-2)",
-                       ifelse(Y4 > 0, "Limited (< 0.5)",
-                              "Absent"))),
+    Y4 = ifelse(Y4 >= 1, "Ideal (1+)", 
+                ifelse(Y4 > 0, "Limited (<1)",
+                       "Absent")),
     
-    Y5 = ifelse(Y5 >= 2, "Ideal (2+)", 
-                ifelse(Y5 >= 0.5, "Moderate (0.5-2)",
-                       ifelse(Y5 > 0, "Limited (< 0.5)",
-                              "Absent"))) )
+    Y5 = ifelse(Y5 >= 1, "Ideal (1+)", 
+                ifelse(Y5 > 0, "Limited (<1)",
+                       "Absent")) )
 ##
 #
