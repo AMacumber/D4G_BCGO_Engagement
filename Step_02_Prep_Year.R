@@ -92,26 +92,26 @@ member_engagement_levels <- member_engagement %>%
     Y1 = ifelse(Y1 >= 2, "Ideal (2+)", 
                ifelse(Y1 >= 0.5, "Moderate (0.5-2)",
                       ifelse(Y1 > 0, "Limited (< 0.5)",
-                             "Did Not Attend"))),
+                             "Absent"))),
 
     Y2 = ifelse(Y2 >= 2, "Ideal (2+)", 
                 ifelse(Y2 >= 0.5, "Moderate (0.5-2)",
                        ifelse(Y2 > 0, "Limited (< 0.5)",
-                              "Did Not Attend"))),
+                              "Absent"))),
     
     Y3 = ifelse(Y3 >= 2, "Ideal (2+)", 
                 ifelse(Y3 >= 0.5, "Moderate (0.5-2)",
                        ifelse(Y3 > 0, "Limited (< 0.5)",
-                              "Did Not Attend"))),
+                              "Absent"))),
     
     Y4 = ifelse(Y4 >= 2, "Ideal (2+)", 
                 ifelse(Y4 >= 0.5, "Moderate (0.5-2)",
                        ifelse(Y4 > 0, "Limited (< 0.5)",
-                              "Did Not Attend"))),
+                              "Absent"))),
     
     Y5 = ifelse(Y5 >= 2, "Ideal (2+)", 
                 ifelse(Y5 >= 0.5, "Moderate (0.5-2)",
                        ifelse(Y5 > 0, "Limited (< 0.5)",
-                              "Did Not Attend"))) )
+                              "Absent"))) )
 ##
 #

@@ -11,18 +11,18 @@
 
 #
 ## Count: All Journeys
-journeys_all <- member_engagement_level %>%
+journeys_all <- member_engagement_levels %>%
   
   # Group and count journeys
   group_by(Y1, Y2, Y3, Y4, Y5) %>%
   summarise(Freq = n()) %>%
   ungroup() %>%
   
-  # Define 'Left' as consecutive years 'Did Not Attend'
-  within(Y2[Y2=="Did Not Attend" & Y3 == "Did Not Attend" & Y4 == "Did Not Attend" & Y5 == "Did Not Attend"] <- 'Left') %>%
-  within(Y3[Y3 == "Did Not Attend" & Y4 == "Did Not Attend" & Y5 == "Did Not Attend"] <- 'Left') %>%
-  within(Y4[Y4 == "Did Not Attend" & Y5 == "Did Not Attend"] <- 'Left') %>%
-  within(Y5[Y5 == "Did Not Attend"] <- 'Left')
+  # Define 'Left' as consecutive years 'Absent'
+  within(Y2[Y2=="Absent" & Y3 == "Absent" & Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
+  within(Y3[Y3 == "Absent" & Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
+  within(Y4[Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
+  within(Y5[Y5 == "Absent"] <- 'Left')
 
 #
 ## Count: Junior to Intermediate Journeys
@@ -36,17 +36,10 @@ journeys_Y1_Y2 <- journeys_all %>%
   summarise(Freq = sum(Freq)) %>%
   ungroup() %>%
   
-  # Convert Junior cateories to numbers
-  within(Y1[Y1=="Ideal (2+)"] <- 0) %>%
-  within(Y1[Y1=="Moderate (0.5-2)"] <- 1) %>%
-  within(Y1[Y1=="Limited (< 0.5)"] <- 2) %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y2[Y2=="Ideal (2+)"] <- 3) %>%
-  within(Y2[Y2=="Moderate (0.5-2)"] <- 4) %>%
-  within(Y2[Y2=="Limited (< 0.5)"] <- 5) %>%
-  within(Y2[Y2=="Did Not Attend"] <- 6) %>%
-  within(Y2[Y2=="Left"] <- 7)
+  # Append a year qualifier
+  transform(
+    Y1 = sprintf('Y1_%s', Y1),
+    Y2 = sprintf('Y2_%s', Y2))
 ##
 #
 
@@ -62,22 +55,10 @@ journeys_Y2_Y3 <- journeys_all %>%
   summarise(Freq = sum(Freq)) %>%
   ungroup() %>%
   
-  # Change Left flow to 0
-  #within(Freq[Y2 == 'Left'] <- 0) %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y2[Y2=="Ideal (2+)"] <- 3) %>%
-  within(Y2[Y2=="Moderate (0.5-2)"] <- 4) %>%
-  within(Y2[Y2=="Limited (< 0.5)"] <- 5) %>%
-  within(Y2[Y2=="Did Not Attend"] <- 6) %>%
-  within(Y2[Y2=="Left"] <- 7) %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y3[Y3=="Ideal (2+)"] <- 8) %>%
-  within(Y3[Y3=="Moderate (0.5-2)"] <- 9) %>%
-  within(Y3[Y3=="Limited (< 0.5)"] <- 10) %>%
-  within(Y3[Y3=="Did Not Attend"] <- 11) %>%
-  within(Y3[Y3=="Left"] <- 12)
+  # Append a year qualifier
+  transform(
+    Y2 = sprintf('Y2_%s', Y2),
+    Y3 = sprintf('Y3_%s', Y3))
 ##
 #
 
@@ -93,22 +74,10 @@ journeys_Y3_Y4 <- journeys_all %>%
   summarise(Freq = sum(Freq)) %>%
   ungroup() %>%
   
-  # Remove 'Left'
-  #filter(Y3 != 'Left') %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y3[Y3=="Ideal (2+)"] <- 8) %>%
-  within(Y3[Y3=="Moderate (0.5-2)"] <- 9) %>%
-  within(Y3[Y3=="Limited (< 0.5)"] <- 10) %>%
-  within(Y3[Y3=="Did Not Attend"] <- 11) %>%
-  within(Y3[Y3=="Left"] <- 12) %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y4[Y4=="Ideal (2+)"] <- 13) %>%
-  within(Y4[Y4=="Moderate (0.5-2)"] <- 14) %>%
-  within(Y4[Y4=="Limited (< 0.5)"] <- 15) %>%
-  within(Y4[Y4=="Did Not Attend"] <- 16) %>%
-  within(Y4[Y4=="Left"] <- 17)
+  # Append a year qualifier
+  transform(
+    Y3 = sprintf('Y3_%s', Y3),
+    Y4 = sprintf('Y4_%s', Y4))
 ##
 #
 
@@ -124,21 +93,10 @@ journeys_Y4_Y5 <- journeys_all %>%
   summarise(Freq = sum(Freq)) %>%
   ungroup() %>%
   
-  # Remove 'Left'
-  #filter(Y4 != 'Left') %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y4[Y4=="Ideal (2+)"] <- 13) %>%
-  within(Y4[Y4=="Moderate (0.5-2)"] <- 14) %>%
-  within(Y4[Y4=="Limited (< 0.5)"] <- 15) %>%
-  within(Y4[Y4=="Did Not Attend"] <- 16) %>%
-  within(Y4[Y4=="Left"] <- 17) %>%
-  
-  # Convert Intermediate categories to numbers
-  within(Y5[Y5=="Ideal (2+)"] <- 18) %>%
-  within(Y5[Y5=="Moderate (0.5-2)"] <- 19) %>%
-  within(Y5[Y5=="Limited (< 0.5)"] <- 20) %>%
-  within(Y5[Y5=="Left"] <- 21)
+  # Append a year qualifier
+  transform(
+    Y4 = sprintf('Y4_%s', Y4),
+    Y5 = sprintf('Y5_%s', Y5))
 ##
 #
 
@@ -152,57 +110,48 @@ names(journeys_Y4_Y5) <- c("source", "target", "value")
 #
 
 #
-## Create final dataframe, convert to numeric
-sankey_data <- rbind(as.data.frame(journeys_Y1_Y2),
-                     as.data.frame(journeys_Y2_Y3),
-                     as.data.frame(journeys_Y3_Y4),
-                     as.data.frame(journeys_Y4_Y5))
-i <- c(1, 2, 3)
-sankey_data[ , i] <- apply(sankey_data[ , i], 2,  # Specify own function within apply
-                    function(x) as.numeric(as.character(x)))
+## Load Libraries
+library(networkD3)
 ##
 #
 
 #
-## Create Sankey Plot
+## Format for Plotting
 
-# Load Libraries
-library(networkD3)
+# Create your links
+links <- rbind(as.data.frame(journeys_Y1_Y2),
+               as.data.frame(journeys_Y2_Y3),
+               as.data.frame(journeys_Y3_Y4),
+               as.data.frame(journeys_Y4_Y5))
 
 # Create your nodes
-nodes = data.frame("name" = 
-                     c("Ideal (2+)", # Node 0
-                       "Moderate (0.5-2)", # Node 1
-                       "Limited (< 0.5)", # Node 2
-                       "Ideal (2+)", # Node 3
-                       "Moderate (0.5-2)", # Node 4
-                       "Limited (< 0.5)", # Node 5
-                       "Did Not Attend", # Node 6
-                       "Left",  # Node 7
-                       "Ideal (2+)", # Node 8
-                       "Moderate (0.5-2)", # Node 9
-                       "Limited (< 0.5)", # Node 10
-                       "Did Not Attend", # Node 11
-                       "Left",  # Node 12
-                       "Ideal (2+)", # Node 13
-                       "Moderate (0.5-2)", # Node 14
-                       "Limited (< 0.5)", # Node 15
-                       "Did Not Attend", # Node 16
-                       "Left",  # Node 17
-                       "Ideal (2+)", # Node 18
-                       "Moderate (0.5-2)", # Node 19
-                       "Limited (< 0.5)", # Node 20
-                       "Left"  # Node 21
-                     ))
+nodes <- data.frame(
+  name=c(as.character(links$source), as.character(links$target)) %>% 
+    unique()
+)
 
-# Plot
-sankeyNetwork(Links = sankey_data,
-              Nodes = nodes,
-              Source = "source",
-              Target = "target",
-              Value = "value",
-              NodeID = "name",
-              fontSize= 14,
-              nodeWidth = 15)
+# Create a group column in nodes
+nodes$group <- c("Ideal", "Limited", "Moderate", "Absent", "Ideal", "Left", "Limited", "Moderate", "Absent", "Ideal", "Left", "Limited", "Moderate", "Absent", "Ideal", "Left", "Limited", "Moderate", "Ideal", "Limited", "Moderate", "Left")
+
+# Create your Link Groups
+links$group <- nodes$group[match(links$source, nodes$name)]
+
+# With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+links$IDsource <- match(links$source, nodes$name)-1 
+links$IDtarget <- match(links$target, nodes$name)-1
+
+# prepare color scale: I give one specific color for each node.
+my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Moderate", "Absent", "Left"]) .range(["#89C349", "#DCDCDC", "#AA87BC", "#a0a1a1", "#656666"])'
+##
+#
+
+#
+## Make the network. Plot.
+p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget", 
+                   Value = "value", NodeID = "name", LinkGroup="group", NodeGroup="group",
+                   colourScale = my_color, 
+                   fontSize = 24,
+                   nodeWidth = 30)
+p
 ##
 #
