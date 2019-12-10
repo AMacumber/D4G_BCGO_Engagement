@@ -1,7 +1,8 @@
 # Sankey Diagram
 # Tutorial URL - https://www.r-bloggers.com/creating-custom-sankey-diagrams-using-r/
 # Tutorial URL - https://www.r-graph-gallery.com/322-custom-colours-in-sankey-diagram
-# Author: Andrew Macumber, Heather Woods, Alex Campbell
+# Author: Andrew Macumber, Alex Campbell
+# Pre-requisites: Step 01, Step 02
 
 #
 ## Goal

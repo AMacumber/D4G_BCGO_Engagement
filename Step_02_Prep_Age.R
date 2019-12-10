@@ -1,14 +1,14 @@
-# Step 02 Prep Engagement Summer
-# Author: Andrew Macumber, Heather Woods
+# Step 02 Prep Age School
+# Author: Andrew Macumber
 # Pre-requisites: Step 01
 
 #
-## Filter for Summer Year period
+## Filter for School Year period
 member_visits_calendar <- member_visits %>%
   
-  # Summer Years 2009 to 2018
+  # School Years 2009 to 2018
   filter(check_in_year >= "2009") %>%
-  filter(check_in_year < "2018") %>%
+  filter(check_in_year < "2019") %>%
   
   # Filter for School Period
   filter(check_in_period == "School") %>%
