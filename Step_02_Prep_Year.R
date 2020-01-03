@@ -1,9 +1,9 @@
-# Step 02 Prep Engagement Fiscal
+# Step 02 Prep Engagement School
 # Author: Andrew Macumber, Alex Campbell
 # Pre-requisites: Step 01
 
 #
-## Filter for Fiscal Year period
+## Filter for School period
 member_visits_calendar <- member_visits %>%
   
   # Fiscal Years 2009 to 2018
