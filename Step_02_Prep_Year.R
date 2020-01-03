@@ -46,7 +46,7 @@ member_visits_5year <- member_visits_calendar %>%
     relative_year = (check_in_year - first_year) + 1) %>%
   
   # Keep only the first five years
-  filter(relative_year <= 5) %>%
+  filter(relative_year <= 3) %>%
   
   # Change to Y1:Y5
   mutate(
@@ -92,7 +92,7 @@ member_engagement_levels <- member_engagement %>%
   pivot_wider(names_from = relative_year, values_from = checkin_avg) %>%
   
   # Replace NA with 0
-  replace_na(list(Y1=0, Y2=0, Y3=0, Y4=0, Y5=0)) %>%
+  replace_na(list(Y1=0, Y2=0, Y3=0)) %>%
   
   # Add Engagment Levels
   mutate(
@@ -106,14 +106,6 @@ member_engagement_levels <- member_engagement %>%
     
     Y3 = ifelse(Y3 >= 1, "Ideal (1+)", 
                 ifelse(Y3 > 0, "Limited (<1)",
-                       "Absent")),
-    
-    Y4 = ifelse(Y4 >= 1, "Ideal (1+)", 
-                ifelse(Y4 > 0, "Limited (<1)",
-                       "Absent")),
-    
-    Y5 = ifelse(Y5 >= 1, "Ideal (1+)", 
-                ifelse(Y5 > 0, "Limited (<1)",
                        "Absent")) )
 ##
 #

@@ -14,18 +14,16 @@
 journeys_all <- member_engagement_levels %>%
   
   # Group and count journeys
-  group_by(Y1, Y2, Y3, Y4, Y5) %>%
+  group_by(Y1, Y2, Y3) %>%
   summarise(Freq = n()) %>%
   ungroup() %>%
   
   # Define 'Left' as consecutive years 'Absent'
-  within(Y2[Y2=="Absent" & Y3 == "Absent" & Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
-  within(Y3[Y3 == "Absent" & Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
-  within(Y4[Y4 == "Absent" & Y5 == "Absent"] <- 'Left') %>%
-  within(Y5[Y5 == "Absent"] <- 'Left') %>%
+  within(Y2[Y2=="Absent" & Y3 == "Absent" ] <- 'Left') %>%
+  within(Y3[Y3 == "Absent" ] <- 'Left') %>%
   
   # Remove Absent
-  filter(Y2 != 'Absent', Y3 != 'Absent', Y4 != 'Absent')
+  filter(Y2 != 'Absent', Y3 != 'Absent')
 
 #
 ## Count: Junior to Intermediate Journeys
@@ -66,49 +64,9 @@ journeys_Y2_Y3 <- journeys_all %>%
 #
 
 #
-## Count: Junior to Intermediate Journeys
-journeys_Y3_Y4 <- journeys_all %>%
-  
-  # Select columns of interest
-  select(Y3, Y4, Freq) %>%
-  
-  # Group and count journeys
-  group_by(Y3, Y4) %>%
-  summarise(Freq = sum(Freq)) %>%
-  ungroup() %>%
-  
-  # Append a year qualifier
-  transform(
-    Y3 = sprintf('Y3_%s', Y3),
-    Y4 = sprintf('Y4_%s', Y4))
-##
-#
-
-#
-## Count: Junior to Intermediate Journeys
-journeys_Y4_Y5 <- journeys_all %>%
-  
-  # Select columns of interest
-  select(Y4, Y5, Freq) %>%
-  
-  # Group and count journeys
-  group_by(Y4, Y5) %>%
-  summarise(Freq = sum(Freq)) %>%
-  ungroup() %>%
-  
-  # Append a year qualifier
-  transform(
-    Y4 = sprintf('Y4_%s', Y4),
-    Y5 = sprintf('Y5_%s', Y5))
-##
-#
-
-#
 ## Rename columns for sankey function
 names(journeys_Y1_Y2) <- c("source", "target", "value")
 names(journeys_Y2_Y3) <- c("source", "target", "value")
-names(journeys_Y3_Y4) <- c("source", "target", "value")
-names(journeys_Y4_Y5) <- c("source", "target", "value")
 ##
 #
 
@@ -123,9 +81,7 @@ library(networkD3)
 
 # Create your links
 links <- rbind(as.data.frame(journeys_Y1_Y2),
-               as.data.frame(journeys_Y2_Y3),
-               as.data.frame(journeys_Y3_Y4),
-               as.data.frame(journeys_Y4_Y5))
+               as.data.frame(journeys_Y2_Y3))
 
 # Create your nodes
 nodes <- data.frame(
@@ -134,7 +90,7 @@ nodes <- data.frame(
 )
 
 # Create a group column in nodes
-nodes$group <- c("Ideal", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited")
+nodes$group <- c("Ideal", "Limited", "Ideal", "Left", "Limited", "Ideal", "Left", "Limited")
 
 # Create your Link Groups
 links$group <- nodes$group[match(links$source, nodes$name)]
@@ -153,7 +109,7 @@ my_color <- 'd3.scaleOrdinal() .domain(["Ideal", "Limited", "Left"]) .range(["#8
 p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget", 
                    Value = "value", NodeID = "name", LinkGroup="group", NodeGroup="group",
                    colourScale = my_color, 
-                   fontSize = 56,
+                   fontSize = 12,
                    nodeWidth = 30)
 p
 ##
