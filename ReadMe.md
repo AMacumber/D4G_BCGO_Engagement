@@ -42,7 +42,7 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Create a dim for age at Year 01
 
 **Step 05 Prep Feature Evaluation**
-* filter for: unique, redundant, missing
+* filter for: unique, redundant, missing, imbalanced features
 
 **Test_Members_Unique_Stats**
 * Small analysis to compare unique members found in Attendance and Member data
