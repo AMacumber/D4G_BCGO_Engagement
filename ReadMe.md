@@ -40,6 +40,10 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Add label column; static is no change in engagement, engaged is a change
 * Join members_df features
 * Create a dim for age at Year 01
+* Add total Y1 checkins
+* Add age category at Y1
+* Calculate total fall and winter Y1 checkins
+
 
 **Step 05 Prep Feature Evaluation**
 * filter for: unique, redundant, missing, imbalanced features
