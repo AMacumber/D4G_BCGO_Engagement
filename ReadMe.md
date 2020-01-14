@@ -44,9 +44,14 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Add age category at Y1
 * Calculate total fall and winter Y1 checkins
 
-
 **Step 05 Prep Feature Evaluation**
 * filter for: unique, redundant, missing, imbalanced features
+
+**Step 06 Prep EDA**
+* look at numerical and categorical variables, and against 'churn'
+* encode data
+* XGBoost and evaluation
+
 
 **Test_Members_Unique_Stats**
 * Small analysis to compare unique members found in Attendance and Member data
