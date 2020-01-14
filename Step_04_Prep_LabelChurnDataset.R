@@ -53,10 +53,11 @@ Y1_visits_distribution <- member_visits_5year %>%
   pivot_wider(names_from = season, values_from = season_total) %>%
   replace_na(list(fall_visits=0, winter_visits=0)) %>%
   
-  transmute(
-    fall_frac = fall_visits / (fall_visits + winter_visits),
-    winter_frac = winter_visits / (fall_visits + winter_visits)
-  )
+  mutate(
+    season_most = ifelse(fall_visits > winter_visits, "fall", "winter")
+  ) %>%
+  
+  select(d4g_member_id, season_most)
 ###
 ##
 #
