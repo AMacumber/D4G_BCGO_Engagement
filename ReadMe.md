@@ -35,19 +35,27 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Create 'Links' and 'Nodes' tables for Sankey
 * Plot Sankey Diagram
 
-**Step 04 Prep Label Churn Datasets**
+**Step 04 Prep Feature Engineering**
+* Calculate Year 1 checkin total, and weekly average
+* Calculate if visited more during Fall or Winter
+* Did they visit one clubhouse (single) or more (multi)?
+* Read in distance to clubhouse data (Bruno Afonso)
+
+**Step 05 Prep Label Engage Dataset**
 * Filter for Y1 == Limited and Y2 != Absent
 * Add label column; static is no change in engagement, engaged is a change
 * Join members_df features
 * Create a dim for age at Year 01
-* Add total Y1 checkins
+* Add total Y1 checkins, weekly average
 * Add age category at Y1
-* Calculate total fall and winter Y1 checkins
+* Add season they most visited in (Fall/Winter)
+* Add if they visited one or more clubhouses (Single/Multi)
+* Add distance to clubhouse data (Bruno Afonso)
 
-**Step 05 Prep Feature Evaluation**
+**Step 06 EDA Feature Evaluation**
 * filter for: unique, redundant, missing, imbalanced features
 
-**Step 06 Prep EDA**
+**Step 07 Classification**
 * look at numerical and categorical variables, and against 'churn'
 * encode data
 * XGBoost and evaluation
