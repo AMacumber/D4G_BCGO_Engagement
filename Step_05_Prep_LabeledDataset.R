@@ -9,6 +9,17 @@
 ##
 #
 
+#
+## List of members in the analysis
+final_members_filter <- member_engagement_levels %>%
+  
+  # Only Y1_Limited that are at least Y2_Limited
+  filter(Y1 == 'Limited (<1)', Y2 != 'Absent') %>%
+  
+  select(d4g_member_id)
+##
+#
+
 
 #
 ## Create Labeled Dataset & Feature engineering
@@ -39,7 +50,7 @@ labeled_filter <- member_engagement_levels %>%
   ) %>%
   
   # Add total visits and average visits for year 1
-  left_join(y1_visits, by = "d4g_member_id") %>%
+  left_join(feature_y1_visits_stats, by = "d4g_member_id") %>%
   
   # Add Age Categories
   mutate(
@@ -51,10 +62,7 @@ labeled_filter <- member_engagement_levels %>%
     ) %>%
   
   # Add fall / winter break in visits
-  left_join(Y1_visits_distribution, by = "d4g_member_id") %>%
-  
-  # Add feature_clubhouse_number
-  left_join(feature_clubhouse_number, by = 'd4g_member_id') %>%
+  left_join(feature_y1_season_most, by = "d4g_member_id") %>%
   
   # Add feature_distance2clubhouse
   left_join(feature_distance2clubhouse, by = c('d4g_member_id' = 'D4G_MemberId'))
