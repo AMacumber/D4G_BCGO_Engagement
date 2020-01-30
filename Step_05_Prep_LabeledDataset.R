@@ -65,7 +65,10 @@ labeled_filter <- member_engagement_levels %>%
   left_join(feature_y1_season_most, by = "d4g_member_id") %>%
   
   # Add feature_distance2clubhouse
-  left_join(feature_distance2clubhouse, by = c('d4g_member_id' = 'D4G_MemberId'))
+  left_join(feature_distance2clubhouse, by = c('d4g_member_id' = 'D4G_MemberId')) %>%
+  
+  # Remove redundant features from distance2clubhouse
+  select(-c(X, PostalCode, PostalCodeClean, PostCode, Latitude, Longitude, CityAlt))
 ##
 #
 

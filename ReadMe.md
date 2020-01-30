@@ -38,7 +38,7 @@ Protected. Provided by D4G. Contact Alex Campbell.
 **Step 04 Prep Feature Engineering**
 * Calculate Year 1 checkin total, and weekly average
 * Calculate if visited more during Fall or Winter
-* Did they visit one clubhouse (single) or more (multi)?
+* Did they visit more than one clubhouse? No
 * Read in distance to clubhouse data (Bruno Afonso)
 
 **Step 05 Prep Label Engage Dataset**
@@ -49,7 +49,6 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Add total Y1 checkins, weekly average
 * Add age category at Y1
 * Add season they most visited in (Fall/Winter)
-* Add if they visited one or more clubhouses (Single/Multi)
 * Add distance to clubhouse data (Bruno Afonso)
 
 **Step 06 EDA Feature Evaluation**
