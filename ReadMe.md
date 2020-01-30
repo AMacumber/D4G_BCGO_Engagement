@@ -54,6 +54,8 @@ Protected. Provided by D4G. Contact Alex Campbell.
 
 **Step 06 EDA Feature Evaluation**
 * filter for: unique, redundant, missing, imbalanced features
+* Data: D4G_BGCO_Engage_Labeled_v001: prior to postal code data
+* Data: D4G_BGCO_Engage_Labeled_v002: includes postal code data
 
 **Step 07 Classification**
 * look at numerical and categorical variables, and against 'churn'

@@ -1,7 +1,7 @@
 # Step 04 - Feature Engineering
 # Author: Andrew Macumber, Bruno Afonso
 # Pre-requisites: Step 01, Step 02, Step 03
-## some features are also based on selection of the final labeled dataset (step 05)
+## use final_members_filter (step 05)
 #################################################################################
 #
 ## Rationale
@@ -62,16 +62,16 @@ feature_y1_season_most <- member_visits_5year %>%
 #
 #################################################################################
 #
-## How many clubhouses do Members visit?
+## How many clubhouses do Members visit? In general only one
 
-# create a list of members included in analysis
-final_members <- labeled_filter$d4g_member_id
+# Filter for year 1 visits only
+member_visits_year1 <- member_visits_5year %>% filter(relative_year == 'Y1')
 
 # filter visits for those members only
-final_members_visits <- member_visits_calendar[member_visits_calendar$d4g_member_id %in% final_members,]
+final_members_visits_year1 <- member_visits_1year[member_visits_1year$d4g_member_id %in% final_members_filter$d4g_member_id,]
 
 # do members have more than one member_location? no
-clubhouse_variety <- final_members_visits %>%
+clubhouse_variety <- final_members_visits_year1 %>%
   
   select(d4g_member_id, member_location) %>%
   
@@ -91,7 +91,7 @@ min(clubhouse_variety$clubhouse_sum) # 1
 max(clubhouse_variety$clubhouse_sum) # 1
 
 # do members have more than one program_location?
-clubhouse_variety <- final_members_visits %>%
+clubhouse_variety <- final_members_visits_year1 %>%
   
   select(d4g_member_id, program_location) %>%
   
@@ -108,17 +108,13 @@ clubhouse_variety <- final_members_visits %>%
   summarize(clubhouse_sum = n())
 
 min(clubhouse_variety$clubhouse_sum)  # 1
-max(clubhouse_variety$clubhouse_sum)  # 6
+max(clubhouse_variety$clubhouse_sum)  # 4
 
 # Frequency of program_locations by member
 hist(clubhouse_variety$clubhouse_sum)
 
-feature_clubhouse_number <- clubhouse_variety %>%
-  
-  # Create a feature, visits multiple clubhouses
-  mutate(clubhouse_number = ifelse(clubhouse_sum > 1, 'Multi', 'Single')) %>%
-  
-  select(d4g_member_id, clubhouse_number)
+# In general, members only visited a single location
+
 ##
 #
 #################################################################################
