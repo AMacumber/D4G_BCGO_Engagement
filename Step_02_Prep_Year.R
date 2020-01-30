@@ -18,7 +18,7 @@ member_visits_calendar <- member_visits %>%
     school_year = ifelse(check_in_month > 8, check_in_year, check_in_year - 1)) %>%
   
   # Select relevant dimensions
-  select(d4g_member_id, mem_type, sex, member_age, age_category, check_in_date, check_in_year, check_in_month, check_in_week)
+  select(d4g_member_id, mem_type, sex, member_location, program_location, member_age, age_category, check_in_date, check_in_year, check_in_month, check_in_week)
 
 ##
 #
