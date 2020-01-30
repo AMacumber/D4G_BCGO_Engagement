@@ -124,7 +124,44 @@ feature_distance2clubhouse <- read.csv('Member_Dist_to_Clubhouses_BrunoAfonso.cs
 ##
 #
 #################################################################################
+#
+## What is a member's distance to their clubhouse, minimum distance to clubhouse?
 
+# select only clubhouse distances for each member
+clubhouse_distance <- feature_distance2clubhouse[, c(2, 15:30)]
 
+# select only member's clubhouses from member df
+member_clubhouse <- member_df[,c(1,5)]
 
+# keep only those members that are part of final analysis
+final_members_clubhouse_distance <- final_members_filter %>% 
+  
+  left_join(clubhouse_distance, by = c('d4g_member_id' = 'D4G_MemberId')) %>%
+  
+  # keep only those rows without na
+  filter(complete.cases(.)) %>%
+  
+  # add member clubhouse
+  left_join(member_clubhouse, by = 'd4g_member_id')
+
+# create a reference list of column names
+clubhouse_distance_names <- colnames(final_members_clubhouse_distance)
+
+for (member in seq(1, nrow(final_members_clubhouse_distance))) {
+  
+  final_members_clubhouse_distance$club_km[member] <- final_members_clubhouse_distance[member, grep(final_members_clubhouse_distance$member_location[member], colnames(final_members_clubhouse_distance))]
+  
+  min_value <- 1000
+  
+  for (col in seq(2, ncol(final_members_clubhouse_distance))) {
+    col_value <- final_members_clubhouse_distance[member, col]
+    
+    if (col_value < min_value) {
+      min_value <- col_value
+      min_name <- colnames(final_members_clubhouse_distance[,col])}}
+  
+  final_members_clubhouse_distance$club_min_km[member] <- min_value 
+  final_members_clubhouse_distance$club_min_name[member] <- min_name
+    
+  }
 
