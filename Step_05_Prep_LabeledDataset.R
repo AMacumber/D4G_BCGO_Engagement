@@ -10,18 +10,6 @@
 #
 
 #
-## List of members in the analysis
-final_members_filter <- member_engagement_levels %>%
-  
-  # Only Y1_Limited that are at least Y2_Limited
-  filter(Y1 == 'Limited (<1)', Y2 != 'Absent') %>%
-  
-  select(d4g_member_id)
-##
-#
-
-
-#
 ## Create Labeled Dataset & Feature engineering
 labeled_filter <- member_engagement_levels %>%
   
@@ -65,10 +53,7 @@ labeled_filter <- member_engagement_levels %>%
   left_join(feature_y1_season_most, by = "d4g_member_id") %>%
   
   # Add feature_distance2clubhouse
-  left_join(feature_distance2clubhouse, by = c('d4g_member_id' = 'D4G_MemberId')) %>%
-  
-  # Remove redundant features from distance2clubhouse
-  select(-c(X, PostalCode, PostalCodeClean, PostCode, Latitude, Longitude, CityAlt))
+  left_join(feature_clubhouse_distance, by = 'd4g_member_id')
 ##
 #
 
