@@ -11,6 +11,17 @@
 #
 #################################################################################
 #
+## List of members in the analysis
+final_members_filter <- member_engagement_levels %>%
+  
+  # Only Y1_Limited that are at least Y2_Limited
+  filter(Y1 == 'Limited (<1)', Y2 != 'Absent') %>%
+  
+  select(d4g_member_id)
+##
+#
+#################################################################################
+#
 ## Isolate total visits and visits per week for y1
 feature_y1_visits_stats <- member_engagement %>%
   
@@ -68,7 +79,7 @@ feature_y1_season_most <- member_visits_5year %>%
 member_visits_year1 <- member_visits_5year %>% filter(relative_year == 'Y1')
 
 # filter visits for those members only
-final_members_visits_year1 <- member_visits_1year[member_visits_1year$d4g_member_id %in% final_members_filter$d4g_member_id,]
+final_members_visits_year1 <- member_visits_year1[member_visits_year1$d4g_member_id %in% final_members_filter$d4g_member_id,]
 
 # do members have more than one member_location? no
 clubhouse_variety <- final_members_visits_year1 %>%
@@ -119,12 +130,77 @@ hist(clubhouse_variety$clubhouse_sum)
 #
 #################################################################################
 #
-## Add distance to clubhouse
+## What is a member's distance to their clubhouse, minimum distance to clubhouse?
+
+# Read in distance data
 feature_distance2clubhouse <- read.csv('Member_Dist_to_Clubhouses_BrunoAfonso.csv')
+
+# select only clubhouse distances for each member
+clubhouse_distance <- feature_distance2clubhouse[, c(2, 15:30)]
+
+# select member clubhouses from member df
+member_clubhouse <- member_df[,c(1,5)]
+
+# keep only those members that are part of final analysis
+final_members_clubhouse_distance <- final_members_filter %>% 
+  
+  left_join(clubhouse_distance, by = c('d4g_member_id' = 'D4G_MemberId')) %>%
+  
+  # keep only those rows without na
+  filter(complete.cases(.)) %>%
+  
+  # add member clubhouse
+  left_join(member_clubhouse, by = 'd4g_member_id')
+
+# Feature: distance to member clubhouse (member_df)
+# Feature: minimum distance to clubhouse
+# Feature: difference btw min and clubhouse
+for (member in seq(1, nrow(final_members_clubhouse_distance))) {
+  
+  final_members_clubhouse_distance$club_km[member] <- as.numeric(final_members_clubhouse_distance[member, grep(final_members_clubhouse_distance$member_location[member], colnames(final_members_clubhouse_distance))])
+
+  min_value <- 1000
+  
+  for (col in seq(2, 17)) {
+    col_value <- as.numeric(final_members_clubhouse_distance[member, col])
+    
+    if (col_value < min_value) {
+      min_value <- col_value
+      min_name <- unlist(strsplit(colnames(final_members_clubhouse_distance[,col]), "_"))[3]
+    }
+    }
+  
+  final_members_clubhouse_distance$club_min_km[member] <- min_value 
+  final_members_clubhouse_distance$club_min_name[member] <- min_name
+}
+
+# reduce the number of decimal places
+is.num <- sapply(final_members_clubhouse_distance, is.numeric)
+final_members_clubhouse_distance[is.num] <- lapply(final_members_clubhouse_distance[is.num], round, 2)
+
+# remove member with difference between club_km and club_min_km > 200
+feature_clubhouse_distance <- final_members_clubhouse_distance %>%
+  
+  # remove dist to
+  select(-c(dist_to_ADM, dist_to_BAY, dist_to_BL, dist_to_BRC, dist_to_BRIT, 
+            dist_to_CAMP, dist_to_HEA, dist_to_HGT, dist_to_MC, dist_to_MYC,
+            dist_to_PAL, dist_to_PWH, dist_to_PYC, dist_to_RGM, dist_to_RID,
+            dist_to_ROC, member_location)) %>%
+  
+  mutate(diff_club_min = club_km - min_value) %>%
+  
+  # found that negative numbers were between the same clubhouses
+  mutate(diff_club_min = ifelse(diff_club_min < 0, 0, diff_club_min)) %>%
+  
+  filter(diff_club_min < 500)
+
+# there are two members with differenes greater than 500 km
+# there are 11 members with differences greater than 150 km
+# there are 16 members with differences less than 0 km
+table(feature_clubhouse_distance$diff_club_min)
+hist(feature_clubhouse_distance$diff_club_min)
+boxplot(feature_clubhouse_distance$diff_club_min, horizontal = TRUE, 
+        main = "Distance to Clubhouse in member_df and closest Clubhouse",
+        xlab = "distance (km)")
 ##
 #
-#################################################################################
-
-
-
-
