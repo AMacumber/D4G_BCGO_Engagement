@@ -54,7 +54,7 @@ labeled_filter <- member_engagement_levels %>%
   
   # Add feature_clubhouse_distance
   left_join(feature_clubhouse_distance, by = 'd4g_member_id') %>%
-  select(-c(club_min_name, club_min_km))
+  select(-c(club_min_name, club_min_km, diff_club_min))
 ##
 #
 
