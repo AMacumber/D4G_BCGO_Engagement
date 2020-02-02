@@ -135,8 +135,9 @@ hist(clubhouse_variety$clubhouse_sum)
 # Read in distance data
 feature_distance2clubhouse <- read.csv('Member_Dist_to_Clubhouses_BrunoAfonso.csv')
 
-# select only clubhouse distances for each member
+# select clubhouse distances, neighborhood for each member
 clubhouse_distance <- feature_distance2clubhouse[, c(2, 15:30)]
+feature_member_neighborhood <- feature_distance2clubhouse[, c(2,11)]
 
 # select member clubhouses from member df
 member_clubhouse <- member_df[,c(1,5)]
