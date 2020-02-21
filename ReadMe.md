@@ -55,12 +55,12 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * filter for: unique, redundant, missing, imbalanced features
 * Data: D4G_BGCO_Engage_Labeled_v001: prior to postal code data
 * Data: D4G_BGCO_Engage_Labeled_v002: includes postal code data
+* Data: D4G_BGCO_Engage_Labeled_v003: updated postal code data, removed CAMP and distance outlier
 
 **Step 07 Classification**
 * look at numerical and categorical variables, and against 'churn'
 * encode data
 * XGBoost and evaluation
-
 
 **Test_Members_Unique_Stats**
 * Small analysis to compare unique members found in Attendance and Member data

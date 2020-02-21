@@ -133,11 +133,11 @@ hist(clubhouse_variety$clubhouse_sum)
 ## What is a member's distance to their clubhouse, minimum distance to clubhouse?
 
 # Read in distance data
-feature_distance2clubhouse <- read.csv('Member_Dist_to_Clubhouses_BrunoAfonso.csv')
+feature_distance2clubhouse <- read.csv('Member_Dist_to_Clubhouses_BrunoAfonso_v002.csv')
 
 # select clubhouse distances, neighborhood for each member
-clubhouse_distance <- feature_distance2clubhouse[, c(2, 15:30)]
-feature_member_neighborhood <- feature_distance2clubhouse[, c(2,11)]
+clubhouse_distance <- feature_distance2clubhouse[, c(3, 16:31)]
+feature_member_neighborhood <- feature_distance2clubhouse[, c(3,12)]
 
 # select member clubhouses from member df
 member_clubhouse <- member_df[,c(1,5)]
@@ -186,22 +186,42 @@ feature_clubhouse_distance <- final_members_clubhouse_distance %>%
   select(-c(dist_to_ADM, dist_to_BAY, dist_to_BL, dist_to_BRC, dist_to_BRIT, 
             dist_to_CAMP, dist_to_HEA, dist_to_HGT, dist_to_MC, dist_to_MYC,
             dist_to_PAL, dist_to_PWH, dist_to_PYC, dist_to_RGM, dist_to_RID,
-            dist_to_ROC, member_location)) %>%
+            dist_to_ROC)) %>%
   
-  mutate(diff_club_min = club_km - min_value) %>%
+  mutate(diff_club_min = club_km - club_min_km) # %>%
   
   # found that negative numbers were between the same clubhouses
-  mutate(diff_club_min = ifelse(diff_club_min < 0, 0, diff_club_min)) %>%
+  #mutate(diff_club_min = ifelse(diff_club_min < 0, 0, diff_club_min)) %>%
   
-  filter(diff_club_min < 500)
+  #filter(diff_club_min < 500)
 
 # there are two members with differenes greater than 500 km
 # there are 11 members with differences greater than 150 km
 # there are 16 members with differences less than 0 km
 table(feature_clubhouse_distance$diff_club_min)
 hist(feature_clubhouse_distance$diff_club_min)
+
+# Look at differences between listed clubhouse and closest clubhouse
 boxplot(feature_clubhouse_distance$diff_club_min, horizontal = TRUE, 
-        main = "Distance to Clubhouse in member_df and closest Clubhouse",
+        main = "Difference between distance to Clubhouse in member_df and closest Clubhouse",
         xlab = "distance (km)")
+
+#
+## Look at distribution of distance to clubhouse
+boxplot <- feature_clubhouse_distance$club_km
+## All distances greater than 100 km are related to CAMP (except 1)
+boxplot <- clubhouse_distance_CAMP$club_km
+
+# Boxplot
+boxplot(boxplot, horizontal = TRUE, 
+        main = "Distance to Clubhouse in member_df",
+        xlab = "distance (km)")
+##
+#
+#
+## Members with distances greater than 100km, are all associated with CAMP.
+clubhouse_distance_CAMP <- feature_clubhouse_distance %>%
+  filter(member_location != "CAMP") %>%
+  filter(club_km < 100)
 ##
 #

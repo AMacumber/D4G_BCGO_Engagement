@@ -32,6 +32,9 @@ labeled_filter <- member_engagement_levels %>%
   # Add member info dimensions
   left_join(member_df, by = "d4g_member_id") %>%
   
+  # Filter out CAMP only members (CAMP and outlier)
+  filter(member_location != "CAMP") %>%
+  
   # Create Y1_Age dimension
   mutate(
     Y1_Age = first_year - birth_year
@@ -54,7 +57,16 @@ labeled_filter <- member_engagement_levels %>%
   
   # Add feature_clubhouse_distance
   left_join(feature_clubhouse_distance, by = 'd4g_member_id') %>%
+  
+  # Remove outlier
+  filter(club_km < 100) %>%
+  
+  # Remove irrelevant distance features
   select(-c(club_min_name, club_min_km, diff_club_min))
 ##
 #
-
+#
+## Write csv file
+write.csv(labeled_filter, file = "D4G_BGCO_Engage_Labeled_v003.csv", row.names = FALSE)
+##
+#
