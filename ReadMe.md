@@ -62,7 +62,6 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * encode data
 * XGBoost and evaluation
 
-
 **Test_Members_Unique_Stats**
 * Small analysis to compare unique members found in Attendance and Member data
 
