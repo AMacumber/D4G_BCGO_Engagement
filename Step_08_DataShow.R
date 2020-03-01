@@ -53,9 +53,11 @@ df_distance <- df_000 %>%
   filter(club_km < 20)
 
 ggplot(df_distance, aes(club_km)) +
-  geom_histogram( binwidth=1.25, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
-  annotate("text", x=5, y=133, label= "Bar widths are roughly every 1 km") + 
-  labs(title = "How far Engaged Members travel", x="Distance to Clubhouse(km)", y="Number of Engaged Members", fill = "Engaged") +
+  geom_histogram( bins = 10, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+  annotate("text", x=6, y=140, label= "Bar widths are roughly every 1 km", size = 5) + 
+  labs(title = "Distance of Engaged Members from their Clubhouses", 
+       x="Distance from Clubhouse (km) to Postal Code", y="Number of Engaged Members", fill = "Engaged") +
+  annotate("text", x=6, y=140, label= "Bar widths are roughly every 1 km", size = 7) +
   theme_blackborder_empty()
 ##
 #
@@ -80,7 +82,10 @@ ggplot(df_visits, aes(x = visit_bins, y = Count_Members, fill = label)) +
   scale_y_continuous(labels = scales::percent_format()) +
   #scale_fill_manual(values=c("#098553", "#4ca64c", "#99cc99", "#cccccc")) +
   #guides(fill = guide_legend(reverse = TRUE)) +
-  labs(title = "Year 1 Clubhouse Visits", x="Number of Visits", y="", fill = "Year Two Status:") +
+  theme(plot.title = element_text(size=20)) +
+  labs(title = "How many times did Members visit in the first year?") +
+  labs( x="", y="", fill = "Year Two Status:") +
+  geom_hline(yintercept = 0.5, colour = "white", size = 1) +
   theme(legend.position="top")
   #coord_flip()
 ##
@@ -90,16 +95,11 @@ ggplot(df_visits, aes(x = visit_bins, y = Count_Members, fill = label)) +
 # ECDF - Count of engaged vs Age
 # add lines to show that engaged members tend to be younger
 
-ggplot(df_000, aes(x= Y1_Age, fill=label)) +
-  geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity', bins = 20) +
-  scale_fill_manual(values=c("#69b3a2", "#404080")) +
-  labs(fill="")
-
 df_age <- df_000 %>% filter(label == 'engaged')
 
 ggplot(df_000, aes(Y1_Age, colour = label)) + 
   theme_blackborder_empty() +
   stat_ecdf(geom = "line", size = 2) +
   guides(fill=guide_legend(title="Year Two Status:")) +
-  labs(title = "Member Age Distributions", x="Age of Member During Year One", y="") +
+  labs(title = "Member Age Distributions", x="Age of Member During Year One", y="Fraction of Members") +
   theme(legend.position="top")
