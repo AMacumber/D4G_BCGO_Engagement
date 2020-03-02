@@ -77,6 +77,8 @@ df_visits <- df_000 %>%
   group_by(visit_bins, label) %>%
   summarise(Count_Members =n())
 
+df_visits %>% filter (visit_bins == "35")
+
 # Plot the basic frame of the stacked bar chart.
 ggplot(df_visits, aes(x = visit_bins, y = Count_Members, fill = label)) + 
   theme_blackborder_empty() +
@@ -102,14 +104,12 @@ ggplot(df_000, aes(Y1_Age, colour = label)) +
   theme_blackborder_empty() +
   stat_ecdf(geom = "line", size = 4) +
   guides(fill=guide_legend(title="Year Two Status:")) +
-  labs(title = "Engaged Members tend to be younger.", x="Member Age in First Year", y="Fraction of Members") +
+  labs(title = "Distributions of Members Age in First Year.", x="Member Age in First Year", y="Fraction of Members") +
   theme(plot.title = element_text(size=20)) +
   theme(legend.position="top") +
   geom_hline(yintercept = 0.5, colour = "#cccccc", size = 1, linetype="dotted") +
   geom_vline(xintercept = 8.7, colour = "#cccccc", size = 1) +
-  #geom_segment(data = df_000, aes(x = 10.25, y = -Inf, xend = 10.25, yend = 0.5)) +
-  #geom_segment(aes(x = -Inf, y = 0.5, xend = 10.25, yend = 0.5))+
-  #geom_segment(aes(x = 8.75, y = -Inf, xend = 8.75, yend = 0.5))
+  annotate("text", x=4, y=0.62, label= "Engage members tend to be younger.", size = 4.75) + 
   geom_vline(xintercept = 10.23, colour = "#cccccc", size = 1)
 
 ##
