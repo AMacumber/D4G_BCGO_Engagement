@@ -53,12 +53,14 @@ df_distance <- df_000 %>%
   filter(club_km < 20)
 
 ggplot(df_distance, aes(club_km)) +
-  geom_histogram( bins = 10, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
-  annotate("text", x=6, y=140, label= "Bar widths are roughly every 1 km", size = 5) + 
+  theme_blackborder_empty() +
+  geom_histogram( bins = 16, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+  annotate("text", x=7, y=120, label= "The majority (57%) of Engaged Members \nare within one km.", size = 5) + 
   labs(title = "Distance of Engaged Members from their Clubhouses", 
        x="Distance from Clubhouse (km) to Postal Code", y="Number of Engaged Members", fill = "Engaged") +
-  annotate("text", x=6, y=140, label= "Bar widths are roughly every 1 km", size = 7) +
-  theme_blackborder_empty()
+  theme(plot.title = element_text(size=18))
+  
+ 
 ##
 #
 #############################################################################################################
@@ -93,13 +95,23 @@ ggplot(df_visits, aes(x = visit_bins, y = Count_Members, fill = label)) +
 #############################################################################################################
 #
 # ECDF - Count of engaged vs Age
-# add lines to show that engaged members tend to be younger
 
 df_age <- df_000 %>% filter(label == 'engaged')
 
 ggplot(df_000, aes(Y1_Age, colour = label)) + 
   theme_blackborder_empty() +
-  stat_ecdf(geom = "line", size = 2) +
+  stat_ecdf(geom = "line", size = 4) +
   guides(fill=guide_legend(title="Year Two Status:")) +
-  labs(title = "Member Age Distributions", x="Age of Member During Year One", y="Fraction of Members") +
-  theme(legend.position="top")
+  labs(title = "Engaged Members tend to be younger.", x="Member Age in First Year", y="Fraction of Members") +
+  theme(plot.title = element_text(size=20)) +
+  theme(legend.position="top") +
+  geom_hline(yintercept = 0.5, colour = "#cccccc", size = 1, linetype="dotted") +
+  geom_vline(xintercept = 8.7, colour = "#cccccc", size = 1) +
+  #geom_segment(data = df_000, aes(x = 10.25, y = -Inf, xend = 10.25, yend = 0.5)) +
+  #geom_segment(aes(x = -Inf, y = 0.5, xend = 10.25, yend = 0.5))+
+  #geom_segment(aes(x = 8.75, y = -Inf, xend = 8.75, yend = 0.5))
+  geom_vline(xintercept = 10.23, colour = "#cccccc", size = 1)
+
+##
+#
+#############################################################################################################
