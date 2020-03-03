@@ -67,6 +67,9 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * prepare data
 * Random Forest and evaluation
 
+**Step 08 Data Show**
+* show how number of visits, distance from clubhouse and age during first year are related to engaged members
+
 **Test_Members_Unique_Stats**
 * Small analysis to compare unique members found in Attendance and Member data
 
