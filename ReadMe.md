@@ -57,10 +57,15 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Data: D4G_BGCO_Engage_Labeled_v002: includes postal code data
 * Data: D4G_BGCO_Engage_Labeled_v003: updated postal code data, removed CAMP and distance outlier
 
-**Step 07 Classification**
-* look at numerical and categorical variables, and against 'churn'
-* encode data
+**Step 07 ML_XGBoost**
+* look at numerical and categorical variables, and against 'engage'
+* prepare data
 * XGBoost and evaluation
+
+**Step 07 ML_Random Forest**
+* look at numerical and categorical variables, and against 'engage'
+* prepare data
+* Random Forest and evaluation
 
 **Test_Members_Unique_Stats**
 * Small analysis to compare unique members found in Attendance and Member data
