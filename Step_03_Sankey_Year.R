@@ -154,6 +154,7 @@ p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "
                    Value = "value", NodeID = "name", LinkGroup="group", NodeGroup="group",
                    colourScale = my_color, 
                    fontSize = 56,
+                   #fontSize = 0,
                    nodeWidth = 30)
 p
 ##
