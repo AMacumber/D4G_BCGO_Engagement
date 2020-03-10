@@ -67,9 +67,10 @@ member_engagement_levels <- member_engagement %>%
   
   # Create dim: Eng_Level based on checkin_avg_age
   mutate(
-    Eng_Level = ifelse(checkin_avg_age >= 1, "Ideal (1+)", 
-                       ifelse(checkin_avg_age > 0, "Limited (<1)",
-                              "Absent"))) %>%
+    Eng_Level = ifelse(checkin_avg_age > 0, "Visited", 
+                       #checkin_avg_age >= 1, "Ideal (1+)", 
+                       #ifelse(checkin_avg_age > 0, "Limited (<1)",
+                              "Absent")) %>%
   
     # Select dim of interest
   select(-checkin_avg_age)
