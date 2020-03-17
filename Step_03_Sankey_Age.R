@@ -28,8 +28,7 @@ member_eng_lvl_na <- member_engagement_levels %>%
   inner_join(member_filtered, by = "d4g_member_id") %>%
   
   # replace any NaN with NA
-  mutate_at(vars(-d4g_member_id), funs(ifelse(is.na(.), ifelse(age <= 10, "Young_Int",
-                                                               ifelse(age <= 13, "Young_Sr", "Absent")), .))) %>%
+  mutate_at(vars(-d4g_member_id), funs(ifelse(is.na(.), ifelse(age <= 13, "Young", "Absent"), .))) %>%
   
   # Remove age information and member id
   select(J, I, S)
@@ -46,18 +45,19 @@ journeys_all <- member_eng_lvl_na %>%
   ungroup() %>%
   
   # 'Left' == (Junior Engaged to Int,Sen == 'Absent')
-  within(I[I=="Absent" & S == "Absent"] <- 'LeftAfter_Jnr') %>%
-  within(S[I=="LeftAfter_Jnr"] <- "LeftAfter_Jnr") %>%
-  within(S[S=="Absent"] <- 'LeftAfter_Int') %>%
+  within(I[I=="Absent" & S == "Absent"] <- 'LeftAfter') %>%
+  within(S[I=="LeftAfter"] <- "LeftAfter") %>%
+  within(S[S=="Absent"] <- 'LeftAfter') %>%
   
   # 'JoinedAs'
-  within(I[J=="Absent" & I == "Absent"] <- "JoinedAs_Sr") %>%
-  within(J[I=="JoinedAs_Sr"] <- "JoinedAs_Sr") %>%
-  within(J[J=="Absent"] <- "JoinedAs_Int") %>%
+  within(I[J=="Absent" & I == "Absent"] <- "JoinedAs") %>%
+  within(J[I=="JoinedAs"] <- "JoinedAs") %>%
+  within(J[J=="Absent"] <- "JoinedAs") %>%
   
   # Remove immature members
   #filter(J != 'Young_Int', J != 'Young_Sr', I != 'Young_Int', I != 'Young_Sr', S != 'Young_Int', S != 'Young_Sr') %>%
-  filter(J != 'Jnr_Young_Sr', J != 'Jnr_Young_Int') %>%
+  filter(J != 'Young', J != 'Young') %>%
+  filter(I != 'Young' | S != 'Visited') %>%
   
   # Remove 'Absent' intermediates
   filter(I != "Absent")
@@ -75,7 +75,7 @@ journeys_J_I <- journeys_all %>%
   ungroup() %>%
   
   # Filter out non junior and intermediates
-  filter(J != "JoinedAs_Sr") %>%
+  filter(J != "JoinedAs" | I != "JoinedAs") %>%
   
   # Append an age qualifier
   transform(
@@ -127,8 +127,8 @@ nodes <- data.frame(
 )
 
 # Create a group column in nodes
-nodes$group <- c("Skip", "Visit", "Young", "Young", "Skip", "Left", "Visit", "Young", "Young", "Visit",
-                 "Left", "Left", "Young", "Young")
+nodes$group <- c("Skip", "Visit", "Skip", "Left", "Visit", "Young", "Visit",
+                 "Left", "Young")
 
 # Create your Link Groups
 links$group <- nodes$group[match(links$source, nodes$name)]
@@ -138,7 +138,7 @@ links$IDsource <- match(links$source, nodes$name)-1
 links$IDtarget <- match(links$target, nodes$name)-1
 
 # prepare color scale: I give one specific color for each node.
-my_color <- 'd3.scaleOrdinal() .domain(["Visited", "Skipped", "Young", "Left"]) .range(["#89C349", "#AA87BC", "#DCDCDC", "#656666"])' #   
+my_color <- 'd3.scaleOrdinal() .domain(["Skip", "Visit",  "Young", "Left"]) .range(["#AA87BC", "#89C349", "#DCDCDC", "#656666"])' #   
 
 # Make the Network. I call my colour scale with the colourScale argument
 p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget",
