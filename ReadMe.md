@@ -3,9 +3,11 @@
 # Project: **Engagement Journeys (June Refresh)**
 
 ## Description
-We used Sankey diagrams to show how members engagement (visits per week) levels change over time. These will be organised by two perspectives: a member's first five years and by age categories (Junior, Intermediate, Senior).
+We used Sankey diagrams to show how members engagement (visits per week) levels change over time. These will be organised by two perspectives: a member's first five years (Year) and by age categories (Age).
 
-The first five years perspective showed that there was a group of Year01 members with limited engagement (< 1 visit per week) who had ideal engagement (>1 visit per week) in Year02. We can compare them to all other Year01 members with limited engagement.
+The first five years perspective showed that there was a group of Year01 members with limited engagement (< 1 visit per week) who had ideal engagement (>1 visit per week) in Year02. We can compare them to all other Year01 members with limited engagement. See Steps 1 to Step 3.
+
+Using Classification Analysis in Python (XGBoost and Random Forests) we built a predictive model for Year 1 to Year 2 engagement based on the above cohort. It was relatively successful in predicting which members became more engaged. See Steps 4:7.
 
 See other branches for age category perspectives and by different calendars (Fiscal, School, Summer).
 
@@ -30,8 +32,22 @@ Protected. Provided by D4G. Contact Alex Campbell.
 * Calculate engagement stats
 * Translate engagement stats to categories
 
+**Step 02 Prep Age**
+* Filter for 2009 to 2019 and School Period
+* Calculate engagement stats
+* Translate engagement stats to categories
+
 **Step 03 Sankey Year**
 * Define 'Left'
+* Create 'Links' and 'Nodes' tables for Sankey
+* Plot Sankey Diagram
+
+**Step 03 Sankey Age**
+* Define 'Young' & 'Absent'
+* Create Journeys
+* Define 'Left', 'JoinedAs'
+* Remove members who were always 'Young' or visited after 'Young'
+* Create Junior to Intermediate and Intermediate to Senior Journeys
 * Create 'Links' and 'Nodes' tables for Sankey
 * Plot Sankey Diagram
 
